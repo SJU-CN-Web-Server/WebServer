@@ -1,4 +1,4 @@
-package webserver;
+package webserver.data;
 
 public class HttpRequest {
     public String host;

@@ -1,4 +1,4 @@
-package webserver;
+package webserver.data;
 
 public class HttpResponse {
     public String version;
