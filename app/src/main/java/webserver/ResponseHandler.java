@@ -1,11 +1,15 @@
+//충돌부분: 주석처리
+
 package webserver;
+
+import java.net.Socket;
 
 import webserver.data.HttpRequest;
 import webserver.data.HttpResponse;
 
 public class ResponseHandler extends HttpHandler{
     @Override
-    public void process(HttpRequest request, HttpResponse response) {
+    public void process(HttpRequest request, HttpResponse response, Socket connectionSocket) {
         String responseMessage = convertToHttpMessage(response);
         System.out.println(responseMessage);
         //socket.write(responseMessage); //psudo code
@@ -29,12 +33,12 @@ public class ResponseHandler extends HttpHandler{
         if (response.contentLength != null) {
             httpMessage.append("Content-Length: ").append(response.contentLength).append("\r\n");
         }
-        if (response.KeepAlive != null) {
-            httpMessage.append("Keep-Alive: ").append(response.KeepAlive).append("\r\n");
-        }
-        if (response.Connection != null) {
-            httpMessage.append("Connection: ").append(response.Connection).append("\r\n");
-        }
+        // if (response.KeepAlive != null) {
+        //     httpMessage.append("Keep-Alive: ").append(response.KeepAlive).append("\r\n");
+        // }
+        // if (response.Connection != null) {
+        //     httpMessage.append("Connection: ").append(response.Connection).append("\r\n");
+        // }
         if (response.cache_control != null) {
             httpMessage.append("Cache-Control: ").append(response.cache_control).append("\r\n");
         }
@@ -71,34 +75,34 @@ public class ResponseHandler extends HttpHandler{
 }
 
 
-package webserver;
+// package webserver;
 
-import java.io.*;
-import java.net.*;
-import webserver.data.*;
+// import java.io.*;
+// import java.net.*;
+// import webserver.data.*;
 
-public class ResponseHandler extends HttpHandler{
-    @Override
-    public void process(HttpRequest request, HttpResponse response, Socket connectionSocket) {
-        try {
-            PrintWriter message = new PrintWriter(connectionSocket.getOutputStream(), true);
+// public class ResponseHandler extends HttpHandler{
+//     @Override
+//     public void process(HttpRequest request, HttpResponse response, Socket connectionSocket) {
+//         try {
+//             PrintWriter message = new PrintWriter(connectionSocket.getOutputStream(), true);
             
-            message.println("HTTP/"+response.version+" "+response.status+"\r\n");
-            message.println("Date: "/*+서버 날짜 추가요망*/+"\r\n");
-            message.println("Server: "/*+서버 정보 추가요망*/+"\r\n");
-            if (response.status.equalsIgnoreCase("200 OK"))
-                message.println("Last-Modified: "/*+파일 정보*/+"\r\n");
-            if (response.contentLength!=null)
-                message.println("Content-Length: "+response.contentLength+"\r\n");
-            message.println("Connection: "+response.connection+"\r\n");
-            if (response.keepAlive!=null)
-                message.println("Keep-Alive: "+response.keepAlive+"\r\n");
-            if (response.contentType!=null)
-                message.println("Content-Type: "+response.contentType+"\r\n");
+//             message.println("HTTP/"+response.version+" "+response.status+"\r\n");
+//             message.println("Date: "/*+서버 날짜 추가요망*/+"\r\n");
+//             message.println("Server: "/*+서버 정보 추가요망*/+"\r\n");
+//             if (response.status.equalsIgnoreCase("200 OK"))
+//                 message.println("Last-Modified: "/*+파일 정보*/+"\r\n");
+//             if (response.contentLength!=null)
+//                 message.println("Content-Length: "+response.contentLength+"\r\n");
+//             message.println("Connection: "+response.connection+"\r\n");
+//             if (response.keepAlive!=null)
+//                 message.println("Keep-Alive: "+response.keepAlive+"\r\n");
+//             if (response.contentType!=null)
+//                 message.println("Content-Type: "+response.contentType+"\r\n");
             
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }   
-    }
-}
+//         } catch (Exception e) {
+//             e.printStackTrace();
+//         }   
+//     }
+// }
