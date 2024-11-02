@@ -10,4 +10,6 @@ public class HttpRequest {
     public String query;
     public String body;
     public Integer port;
+    public String connection;
+    public String keepAlive;
 }

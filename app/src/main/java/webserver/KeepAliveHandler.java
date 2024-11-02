@@ -1,28 +1,43 @@
 package webserver;
-import java.net.*;
+//import java.net.*;
 
-public class KeepAliveHandler{
-    private int maxRequests;
-    private int requestCount;
-    private boolean keepAlive;
-    private int timeout;
+import webserver.data.*;;
 
-    public KeepAliveHandler() {
-        maxRequests=100;
-        requestCount=0;
-        keepAlive=true;
-        timeout=5000;
-    }
+public class KeepAliveHandler extends HttpHandler{
+    private int maxRequests=100;
+    private int requestCount=0;
+    private boolean keepAlive=true;
+    private int timeout=5000;
 
+    /*
     void setTimeout(Socket clientSocket){
-        
-    }
+        try{
+            clientSocket.setSoTimeout(timeout);
+        } catch(SocketException e){
 
-    void increaseResquestCount(){
+        }
+    }
+    */
+
+    @Override
+    public void process(HttpRequest request, HttpResponse response){
         requestCount++;
-    }
-
-    boolean isClosed() {
-        return (!keepAlive||requestCount >= maxRequests);
+        if (request.connection.equalsIgnoreCase("close")||requestCount>=maxRequests){
+            response.connection="close";
+            response.keepAlive=null;
+            keepAlive=false;
+        }
+        else {
+            if (request.keepAlive!=null) {
+                String[] token = response.keepAlive.split(",");
+                int newTimeout = Integer.parseInt(token[0].trim().split("=")[1]);
+                int newMaxRequests = Integer.parseInt(token[1].trim().split("=")[1]);
+                timeout = newTimeout < 10 ? newTimeout*1000:10000;
+                maxRequests = newMaxRequests < 100 ? newMaxRequests:100;
+            }
+            response.connection="Keep-Alive";
+            response.keepAlive="timeout="+Integer.toString(timeout)+ "max="+Integer.toString(maxRequests);
+            keepAlive=true;
+        }
     }
 }

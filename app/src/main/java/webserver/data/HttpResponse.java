@@ -6,6 +6,6 @@ public class HttpResponse {
     public String body;
     public String contentType;
     public String contentLength;
-    public String KeepAlive;
-    public String Connection;
+    public String keepAlive;
+    public String connection;
 }
