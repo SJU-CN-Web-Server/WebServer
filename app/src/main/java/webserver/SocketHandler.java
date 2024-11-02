@@ -91,7 +91,7 @@ public class SocketHandler {
             //     .setNextHandler(responseBodyCreator)
             //     .setNextHandler(httpResponseHandler);
 
-            httpRequestParser.handle(request, response);
+            httpRequestParser.handle(request, response, connectionSocket);
 
             sendAvailable(connectionSocket, response);
         });

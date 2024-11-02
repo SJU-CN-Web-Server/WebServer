@@ -1,5 +1,7 @@
 package webserver;
 
+import java.net.Socket;
+
 import webserver.data.HttpRequest;
 import webserver.data.HttpResponse;
 
@@ -11,7 +13,7 @@ public class HttpHeaderHandler extends HttpHandler{
      * @param response the HTTP response to generate
      */
     @Override
-    public void process(HttpRequest request, HttpResponse response){
+    public void process(HttpRequest request, HttpResponse response, Socket clientSocket){
 
     }
 

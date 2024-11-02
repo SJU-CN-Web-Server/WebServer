@@ -1,6 +1,8 @@
 //서현 코드
 package webserver;
 
+import java.net.Socket;
+
 import webserver.data.HttpRequest;
 import webserver.data.HttpResponse;
 
@@ -9,7 +11,7 @@ public class ResponseBodyCreator extends HttpHandler {
     // 비즈니스 로직으로부터 리소스를 받아 응답을 생성하는 메소드(응답의 본문 생성)
     // HttpRequest와 HttpResponse 객체를 사용하여 응답을 생성
     @Override
-    public void process(HttpRequest request, HttpResponse response) {
+    public void process(HttpRequest request, HttpResponse response, Socket clientSocket) {
         StringBuilder responseBody = new StringBuilder("<html><body>"); 
 
         if (response.status == 200) { // 상태 코드가 200이면 성공적인 응답이므로 본문 생성
@@ -57,7 +59,8 @@ public class ResponseBodyCreator extends HttpHandler {
         // 응답 객체에 본문 및 기타 정보 설정
         response.body = responseBody.toString();
         response.contentType = "text/html";
-        response.contentLength = String.valueOf(response.body.length());
+        // response.contentLength = String.valueOf(response.body.length()); // 불필요함. response.contentLength가 이미 Integer임.
+        response.contentLength = response.body.length();
     }
 
     // 오류 응답을 생성하는 메소드

@@ -1,5 +1,7 @@
 package webserver;
 
+import java.net.Socket;
+
 import webserver.data.HttpRequest;
 import webserver.data.HttpResponse;
 
@@ -8,7 +10,7 @@ public class HttpRequestParser extends HttpHandler {
 
     // 전체 parsing 과정 수행. 최종 Request 반환
     @Override
-    public void process(HttpRequest request, HttpResponse response) {
+    public void process(HttpRequest request, HttpResponse response, Socket clientSocket) {
         this.request = request;
         String[] lines = request.rawData.split("\r\n");
 

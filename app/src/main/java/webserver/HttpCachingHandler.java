@@ -1,5 +1,6 @@
 package webserver;
 
+import java.net.Socket;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Instant;
@@ -9,7 +10,7 @@ import webserver.data.HttpResponse;
 
 public class HttpCachingHandler extends HttpHandler{
     @Override
-    public void process(HttpRequest request, HttpResponse response){
+    public void process(HttpRequest request, HttpResponse response, Socket clientSocket) {
         if(request.if_modified_since.isPresent() 
         || request.if_none_match.isPresent()) {
             handleCacheRequest(request, response);

@@ -2,6 +2,7 @@ package webserver;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.Socket;
 import java.nio.file.Files;
 
 import webserver.data.HttpRequest;
@@ -14,7 +15,7 @@ public class BusinessLogicHandler extends HttpHandler {
     private File resource;
 
     @Override
-    public void process(HttpRequest request, HttpResponse response) {
+    public void process(HttpRequest request, HttpResponse response, Socket clientSocket) {
         // 요청된 리소스 경로를 가져옴
         currentResourcePath = request.abspath;  // 사용자가 요청한 파일의 경로를 가져옴
 
