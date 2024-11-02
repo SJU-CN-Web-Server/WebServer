@@ -1,7 +1,10 @@
 package webserver;
 
-import java.net.*;
-import webserver.data.*;
+
+import java.net.Socket;
+
+import webserver.data.HttpRequest;
+import webserver.data.HttpResponse;
 
 public abstract class HttpHandler {
     private HttpHandler nextHandler;
