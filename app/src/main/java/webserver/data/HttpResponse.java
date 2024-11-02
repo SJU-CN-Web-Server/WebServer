@@ -8,4 +8,5 @@ public class HttpResponse {
     public String contentLength;
     public String KeepAlive;
     public String Connection;
+    public String rawData; //추가
 }
