@@ -24,7 +24,7 @@ public class KeepAliveHandler extends HttpHandler{
     }
 
     @Override
-    public void process(HttpRequest request, HttpResponse response, Socket connectionSocket){
+    public void process(HttpRequest request, HttpResponse response, Socket connectionSocket) {
         requestCount++;
         // request 메세지의 Connection: 헤더가 close이거나 요청된 메세지의 수가 최대 메세지 수 보다 크다면 keep-alive를 close로 설정
         if (request.connection.equalsIgnoreCase("close")||isRequsetLimitExceeded()){
@@ -49,11 +49,11 @@ public class KeepAliveHandler extends HttpHandler{
             response.keepAlive="timeout="+Integer.toString(timeout/1000)+ "max="+Integer.toString(maxRequests);
             keepAlive=true;
         }
+        // 소켓 TTL 설정
         try {
-            // 소켓 TTL 설정
             connectionSocket.setSoTimeout(timeout);
-        } catch (Exception e) {
-            e.getStackTrace();
+        } catch (SocketException e){
+            System.err.println("Error Occured:"+e.getMessage());
         }
     }
 }
