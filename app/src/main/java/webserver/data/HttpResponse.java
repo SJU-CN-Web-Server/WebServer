@@ -5,7 +5,9 @@ public class HttpResponse {
     public Integer status;
     public String body;
     public String contentType;
-    public String contentLength;
+    public Integer contentLength;
     public String KeepAlive;
     public String Connection;
+    public String cache_control;
+    public String cache_expires;
 }
