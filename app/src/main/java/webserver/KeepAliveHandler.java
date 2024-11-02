@@ -9,17 +9,12 @@ public class KeepAliveHandler extends HttpHandler{
     private boolean keepAlive=true;
     private int timeout=5000;
 
-
-    void setTimeout(Socket clientSocket) throws SocketException{
-        clientSocket.setSoTimeout(timeout);
-    }
-
     boolean isRequsetLimitExceeded(){
         return requestCount >= maxRequests;
     }
 
     @Override
-    public void process(HttpRequest request, HttpResponse response){
+    public void process(HttpRequest request, HttpResponse response, Socket clienSocket){
         requestCount++;
         if (request.connection.equalsIgnoreCase("close")||isRequsetLimitExceeded()){
             response.connection="close";
@@ -37,6 +32,12 @@ public class KeepAliveHandler extends HttpHandler{
             response.connection="Keep-Alive";
             response.keepAlive="timeout="+Integer.toString(timeout/1000)+ "max="+Integer.toString(maxRequests);
             keepAlive=true;
+        }
+        
+        try {
+            clienSocket.setSoTimeout(timeout);
+        } catch (Exception e) {
+            e.getStackTrace();
         }
     }
 }
