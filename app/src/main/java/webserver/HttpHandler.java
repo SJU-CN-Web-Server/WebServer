@@ -16,6 +16,7 @@ public abstract class HttpHandler {
         process(request, response, connectionSocket);
         //추가 구현예정
         if(goToResponse){
+
             return;
         }
         if(!goToResponse && nextHandler != null){
@@ -26,5 +27,9 @@ public abstract class HttpHandler {
     public HttpHandler setNextHandler(HttpHandler nextHandler) {
         this.nextHandler = nextHandler;
         return this.nextHandler;
+    }
+
+    public void setGoToResponse(boolean goToResponse) {
+        this.goToResponse = goToResponse;
     }
 }
