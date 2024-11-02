@@ -1,5 +1,5 @@
 package webserver;
-//import java.net.*;
+import java.net.*;
 
 import webserver.data.*;;
 
@@ -9,20 +9,19 @@ public class KeepAliveHandler extends HttpHandler{
     private boolean keepAlive=true;
     private int timeout=5000;
 
-    /*
-    void setTimeout(Socket clientSocket){
-        try{
-            clientSocket.setSoTimeout(timeout);
-        } catch(SocketException e){
 
-        }
+    void setTimeout(Socket clientSocket) throws SocketException{
+        clientSocket.setSoTimeout(timeout);
     }
-    */
+
+    boolean isRequsetLimitExceeded(){
+        return requestCount >= maxRequests;
+    }
 
     @Override
     public void process(HttpRequest request, HttpResponse response){
         requestCount++;
-        if (request.connection.equalsIgnoreCase("close")||requestCount>=maxRequests){
+        if (request.connection.equalsIgnoreCase("close")||isRequsetLimitExceeded()){
             response.connection="close";
             response.keepAlive=null;
             keepAlive=false;
@@ -36,7 +35,7 @@ public class KeepAliveHandler extends HttpHandler{
                 maxRequests = newMaxRequests < 100 ? newMaxRequests:100;
             }
             response.connection="Keep-Alive";
-            response.keepAlive="timeout="+Integer.toString(timeout)+ "max="+Integer.toString(maxRequests);
+            response.keepAlive="timeout="+Integer.toString(timeout/1000)+ "max="+Integer.toString(maxRequests);
             keepAlive=true;
         }
     }
