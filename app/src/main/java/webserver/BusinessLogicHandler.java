@@ -2,8 +2,8 @@ package webserver;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.Socket;
 import java.nio.file.Files;
+import java.net.*;
 
 import webserver.data.HttpRequest;
 import webserver.data.HttpResponse;
@@ -15,7 +15,7 @@ public class BusinessLogicHandler extends HttpHandler {
     private File resource;
 
     @Override
-    public void process(HttpRequest request, HttpResponse response, Socket clientSocket) {
+    public void process(HttpRequest request, HttpResponse response, Socket connectionSocket) {
         // 요청된 리소스 경로를 가져옴
         currentResourcePath = request.abspath;  // 사용자가 요청한 파일의 경로를 가져옴
 
@@ -48,11 +48,22 @@ public class BusinessLogicHandler extends HttpHandler {
     }
 
     // 지정된 리소스를 읽어 데이터를 반환하는 메서드
-    private Object readResource(HttpRequest request) throws IOException {
+    private String readResource(HttpRequest request) throws IOException {
         if (resource.isDirectory()) {
             request.isDirectory = true;
-            return resource.listFiles(); // 디렉토리의 경우 파일 목록 반환
-        } else {
+
+            File[] listFiles = resource.listFiles();
+            String listFilesString = "";
+            String directoryPostfix;
+
+            for (File file : listFiles) {
+                directoryPostfix = file.isDirectory() ? "/" : "";
+                listFilesString += (file.getAbsolutePath() + ":" + file.getName() + directoryPostfix + ":" + file.length() + "bytes:" + file.lastModified() + "!");
+            }
+
+            return listFilesString; // 디렉토리의 경우 파일 목록 반환
+        } 
+        else {
             request.isDirectory = false;
             return new String(Files.readAllBytes(resource.toPath())); // 파일의 경우 내용 반환
         }
