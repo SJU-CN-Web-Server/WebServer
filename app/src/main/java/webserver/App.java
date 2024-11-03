@@ -4,11 +4,9 @@
 package webserver;
 
 public class App {
-    public String getGreeting() {
-        return "Hello World!";
-    }
-
     public static void main(String[] args) {
-        System.out.println(new App().getGreeting());
+        SocketHandler socketHandler = new SocketHandler(3000, 100);
+
+        socketHandler.startServer();
     }
 }

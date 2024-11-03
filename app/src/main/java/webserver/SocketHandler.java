@@ -6,10 +6,10 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
 
 import webserver.data.HttpRequest;
 import webserver.data.HttpResponse;
@@ -17,18 +17,15 @@ import webserver.data.HttpResponse;
 public class SocketHandler {
     // 클라이언트 연결 받을 서버 소켓 생성
     private ServerSocket welcomeSocket;
-    // 서버에서 허용할 최대 연결 수 저장
-    private int maxConnection;
     // threadPool 사용하여 멀티 스레딩 환경 관리
     private ExecutorService threadPool;
     // maxConnection 초과 여부
-    private boolean isConnectionMax;
+    private int maxConnection;
 
 
     // 생성자 : 서버 소켓을 초기화하고 maxConnection 설정
     public SocketHandler(int port, int maxConnection) {
         this.maxConnection = maxConnection;
-        this.isConnectionMax = false;
 
         // maxConnection만큼 스레드를 만들어 멀티 스레딩 환경 관리
         this.threadPool = Executors.newFixedThreadPool(maxConnection);
@@ -62,7 +59,7 @@ public class SocketHandler {
 
     // maxConnection 확인하고 초과 시 sendUnavailable() 호출. 그렇지 않으면 클라이언트 요청 처리
     private void handleClientRequest(Socket connectionSocket) {
-        if (isConnectionMax) {
+        if (((ThreadPoolExecutor) this.threadPool).getActiveCount() >= this.maxConnection) {
             // maxConnection 초과 시 503 에러 메시지
             sendUnavailable(connectionSocket);
             return;
@@ -76,24 +73,21 @@ public class SocketHandler {
             HttpResponse response = new HttpResponse();
             
             HttpHandler httpRequestParser = new HttpRequestParser();
-            // Handler 추가 예정
-            // HttpHandler httpHeaderHandler = new HttpHeaderHandler();
             KeepAliveHandler keepAliveHandler = new KeepAliveHandler();
-            // HttpHandler httpRequestRouter = new HttpRequestRouter();
-            // HttpHandler cacheHandler = new CacheHandler(); 
+            HttpHandler routerHandler = new RouterHandler();
+            HttpHandler httpCachingHandler = new HttpCachingHandler(); 
             HttpHandler businessLogicHandler = new BusinessLogicHandler();
             HttpHandler responseBodyCreator = new ResponseBodyCreator();
-            // HttpHandler httpResponseHandler = new HttpResponseHandler();
+            HttpHandler responseHandler = new ResponseHandler();
                 
             // Handler 연결
-            // httpRequestParser
-            //     .setNextHandler(HttpHeaderHandler)
-            //     .setNextHandler(keepAliveHandler)
-            //     .setNextHandler(httpRequestRouter)
-            //     .setNextHandler(cacheHandler)
-            //     .setNextHandler(businessLogicHandler)
-            //     .setNextHandler(responseBodyCreator)
-            //     .setNextHandler(httpResponseHandler);
+            httpRequestParser
+                .setNextHandler(keepAliveHandler)
+                .setNextHandler(routerHandler)
+                .setNextHandler(httpCachingHandler)
+                .setNextHandler(businessLogicHandler)
+                .setNextHandler(responseBodyCreator)
+                .setNextHandler(responseHandler);
 
             //request 메세지 처리
             while(true){
@@ -102,19 +96,43 @@ public class SocketHandler {
                     BufferedReader in = new BufferedReader(new InputStreamReader(connectionSocket.getInputStream()));
                     StringBuilder requestBuilder = new StringBuilder();
                     String line;
-                    while(!(line = in.readLine()).isBlank()){
-                        requestBuilder.append(line);
+
+                    int contentLength = 0;
+
+                    // 헤더 부분 읽기
+                    while (true) {
+                        line = in.readLine();
+                        if (line == null || line.isBlank()) break;
+                        requestBuilder.append(line).append("\r\n");
+                        // Content-Length 헤더를 통해 body의 길이를 가져옴
+                        if (line.startsWith("Content-Length")) {
+                            contentLength = Integer.parseInt(line.split(": ")[1]);
+                        }
                     }
+
+                    // 빈 줄 추가 (header와 body를 구분하는 빈 줄)
+                    requestBuilder.append("\r\n");
+
+                    // body 읽기
+                    if (contentLength > 0) {
+                        char[] body = new char[contentLength];
+                        in.read(body, 0, contentLength);
+                        requestBuilder.append(body);
+                    }
+                    
                     requestString = requestBuilder.toString();
                     request.rawData = requestString;
-                
-                    httpRequestParser.handle(request, response, connectionSocket);
+                    
+                    // goToResponse 해야 하면 responseHandler로 바로 연결
+                    if(!httpRequestParser.handle(request, response, connectionSocket)){
+                        responseHandler.process(request, response, connectionSocket);
+                    }
+
                     sendAvailable(connectionSocket, response);
 
                     //keepAlive 검사
                     if (keepAliveHandler.isKeepAlive()) break;
-                }
-                catch(SocketTimeoutException e){
+                } catch(SocketTimeoutException e){
                     System.err.println("Socket timed out: " + e.getMessage());
                     break;
                 } catch (IOException e) {

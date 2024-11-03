@@ -12,7 +12,7 @@ public class RouterHandler extends HttpHandler{
     }
 
     String getAbsPath(HttpRequest request) {
-        String basePath = "./";
+        String basePath = System.getProperty("user.dir");
         return basePath + request.path;
     }
 }

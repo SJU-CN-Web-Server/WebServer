@@ -21,7 +21,6 @@ public class HttpRequest {
     // public String keepAlive; //추가
     // public String connection; //추가
 
-    public String abspath;
     public boolean isDirectory;
 
     public Optional<String> if_modified_since;

@@ -12,16 +12,20 @@ public abstract class HttpHandler {
     
     public abstract void process(HttpRequest request, HttpResponse response, Socket connectionSocket);
 
-    public void handle(HttpRequest request, HttpResponse response, Socket connectionSocket){
-        process(request, response, connectionSocket);
-        //추가 구현예정
-        if(goToResponse){
+    public boolean handle(HttpRequest request, HttpResponse response, Socket connectionSocket){
 
-            return;
+        process(request, response, connectionSocket);
+        //goToResponse해야 할 때에는 false 반환
+        if(goToResponse){
+            return false;
         }
+
+        //아니라면 다음 handler 실행
         if(!goToResponse && nextHandler != null){
             nextHandler.handle(request, response, connectionSocket);
         }
+
+        return true;
     }
 
     public HttpHandler setNextHandler(HttpHandler nextHandler) {
