@@ -48,6 +48,7 @@ public final class Server {
     private void closeSocket() {
         try {
             connectionSocket.close();
+            System.out.println("소켓을 정상적으로 닫았습니다.");
         } catch (Exception e) {
             System.err.println("소켓 닫는 중 오류 발생" + e.getMessage());
         }
@@ -110,7 +111,7 @@ public final class Server {
             
             // HTTP 응답 헤더 작성 후 클라이언트에게 전송
             writer.println(response.rawData);
-            writer.println();
+            //writer.println();
             writer.flush(); // 버퍼에 저장된 데이터를 즉시 출력하도록 강제
             
             // 메시지 전송 후 클라이언트 소켓 close

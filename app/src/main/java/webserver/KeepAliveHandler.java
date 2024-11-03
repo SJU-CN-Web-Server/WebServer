@@ -6,7 +6,7 @@ import webserver.data.*;;
 public class KeepAliveHandler extends HttpHandler{
     // 한번의 TCP연결에서 최대로 요청 받을 수 있는 메세지 수
     // 서버 기본 설정 100
-    private int maxRequests=100;
+    private int maxRequests=3;
     // 현재 요청 된 메세지 수
     private int requestCount=0;
     // keep-alive 사용 여부
