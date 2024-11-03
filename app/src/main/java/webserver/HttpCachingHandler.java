@@ -19,11 +19,6 @@ public class HttpCachingHandler extends HttpHandler{
         }
     }
 
-    // private boolean isCacheable(HttpRequest request){
-    //     return true;
-    // }
-
-    
     private void handleCacheRequest(HttpRequest request, HttpResponse response){
         //캐시 로직 처리
         String filePath = request.absPath;
