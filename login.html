@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="{{url_for('static', filename='login.css')}}">
+</head>
+<body>
+    <div class="login-container">
+        <h2>Login</h2>
+        <input type="text" id="userID" class="input-field" placeholder="ID">
+        <input type="password" id="password" class="input-field" placeholder="Password">
+        <button class="login-button" onclick="login()">Login</button>
+        <p id="error-message" class="error-message"></p>
+    </div>
+    <script src="{{url_for('static', filename='login.js')}}"></script>
+</body>
+</html>
