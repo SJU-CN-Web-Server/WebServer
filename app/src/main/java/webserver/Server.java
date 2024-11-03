@@ -69,10 +69,10 @@ public final class Server {
                 String currentData = out.toString("UTF-8");
 
                 // // 요청이 끝났는지 확인: 빈 줄 "\r\n\r\n"이 있으면 완료로 판단
-                // if (currentData.contains("\r\n\r\n")) {
-                //     // requestComplete = true;
-                //     break;
-                // }
+                if (currentData.contains("\r\n\r\n")) {
+                    // requestComplete = true;
+                    break;
+                }
             }
             httpRequest.rawData = out.toString();
             // logger.info(() -> "요청 받음: " + httpRequest.rawData);
