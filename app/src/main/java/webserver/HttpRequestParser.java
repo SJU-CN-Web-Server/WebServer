@@ -17,6 +17,7 @@ public class HttpRequestParser extends HttpHandler {
         parseStartLine(lines[0]);
         parseHeader(lines);
         parseBody();
+        System.out.println("Request: " + request.toString());
     }
 
     // HttpRequest의 첫 줄(method, URL, version) Parsing하여 Request 객체에 추가

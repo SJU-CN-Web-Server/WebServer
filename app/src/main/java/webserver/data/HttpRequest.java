@@ -1,7 +1,5 @@
 package webserver.data;
 
-import java.util.Optional;
-
 public class HttpRequest {
     public String host;
     public String method;
@@ -21,10 +19,9 @@ public class HttpRequest {
     // public String keepAlive; //추가
     // public String connection; //추가
 
-    public String abspath;
     public boolean isDirectory;
 
-    public Optional<String> if_modified_since;
-    public Optional<String> if_none_match;
+    public String if_modified_since;
+    public String if_none_match;
     public String absPath;
 }

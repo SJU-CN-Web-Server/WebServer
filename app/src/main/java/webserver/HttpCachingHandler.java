@@ -11,8 +11,8 @@ import webserver.data.HttpResponse;
 public class HttpCachingHandler extends HttpHandler{
     @Override
     public void process(HttpRequest request, HttpResponse response, Socket clientSocket) {
-        if(request.if_modified_since.isPresent() 
-        || request.if_none_match.isPresent()) {
+        if(request.if_modified_since != null
+        || request.if_none_match != null) {
             handleCacheRequest(request, response);
         } else {
             handleNonCacheRequest(response);
@@ -30,7 +30,7 @@ public class HttpCachingHandler extends HttpHandler{
         Path path = Path.of(filePath);
         try{
             Instant lastModified = Files.getLastModifiedTime(path).toInstant();
-            Instant ifModifiedSince = Instant.parse(request.if_modified_since.get());
+            Instant ifModifiedSince = Instant.parse(request.if_modified_since);
 
             if(lastModified.isAfter(ifModifiedSince)){
                 response.status = 200;

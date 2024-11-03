@@ -1,6 +1,8 @@
 package webserver;
 
 import java.net.Socket;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import webserver.data.HttpRequest;
 import webserver.data.HttpResponse;
@@ -13,6 +15,7 @@ public class RouterHandler extends HttpHandler{
 
     String getAbsPath(HttpRequest request) {
         String basePath = "./";
-        return basePath + request.path;
+        Path path = Paths.get(basePath, request.path == null ? "" : request.path, "hello.txt");
+        return path.toString();
     }
 }

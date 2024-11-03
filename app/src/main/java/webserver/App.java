@@ -10,5 +10,7 @@ public class App {
 
     public static void main(String[] args) {
         System.out.println(new App().getGreeting());
+        SocketHandler socketHandler = new SocketHandler(8080, 10);
+        socketHandler.startServer();
     }
 }
