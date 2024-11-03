@@ -31,6 +31,7 @@ public final class Server {
 
     public Server(Socket connectionSocket) {
         this.connectionSocket = connectionSocket;
+        logger.info(() -> "\nConnection Socket ID: " + connectionSocket.hashCode());
         initializeHandler();
         initializeHandlerChain();
     }
@@ -41,7 +42,7 @@ public final class Server {
             if(getRequest()){ //에러발생하는 부분
                 entryHandler.handle(httpRequest, httpResponse, connectionSocket);
                 sendAvailable(connectionSocket, httpResponse);
-                System.out.println("hmm");
+                // System.out.println("hmm");
             }
         } while(isConnectionAlive());
         closeSocket();
