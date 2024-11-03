@@ -7,8 +7,6 @@ import java.net.Socket;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import webserver.data.HttpResponse;
-
 public class SocketHandler {
     // 클라이언트 연결 받을 서버 소켓 생성
     private ServerSocket welcomeSocket;
@@ -93,22 +91,22 @@ public class SocketHandler {
         }
     }
 
-    private void sendAvailable(Socket connectionSocket, HttpResponse response) {
-        try {
-            PrintWriter writer = new PrintWriter(connectionSocket.getOutputStream(), true);
+    // private void sendAvailable(Socket connectionSocket, HttpResponse response) {
+    //     try {
+    //         PrintWriter writer = new PrintWriter(connectionSocket.getOutputStream(), true);
             
-            // HTTP 응답 헤더 작성 후 클라이언트에게 전송
-            writer.println(response.rawData);
-            writer.println();
-            writer.flush(); // 버퍼에 저장된 데이터를 즉시 출력하도록 강제
+    //         // HTTP 응답 헤더 작성 후 클라이언트에게 전송
+    //         writer.println(response.rawData);
+    //         writer.println();
+    //         writer.flush(); // 버퍼에 저장된 데이터를 즉시 출력하도록 강제
             
-            // 메시지 전송 후 클라이언트 소켓 close
-            //connectionSocket.close();
-        }
-        catch (IOException e) {
-            System.err.println("응답을 보내는 동안 오류 발생" + e.getMessage());
-        }
-    }
+    //         // 메시지 전송 후 클라이언트 소켓 close
+    //         //connectionSocket.close();
+    //     }
+    //     catch (IOException e) {
+    //         System.err.println("응답을 보내는 동안 오류 발생" + e.getMessage());
+    //     }
+    // }
 
     // 서버 종료하고 열려 있는 모든 소켓을 close
     public void closeServer() {

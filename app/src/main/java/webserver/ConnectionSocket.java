@@ -4,6 +4,7 @@ package webserver;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.Optional;
 import java.util.logging.Logger;
@@ -47,4 +48,13 @@ public class ConnectionSocket {
         return Optional.empty();
     }
 
+    public void sendMessages(String message){
+        try{
+            PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+            out.println(message);
+        }
+        catch(IOException e){
+            logger.warning(() -> "클라이언트 요청을 받는 동안 오류 발생" + e.getMessage());
+        }
+    }
 }
