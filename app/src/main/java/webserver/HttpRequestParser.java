@@ -14,6 +14,8 @@ public class HttpRequestParser extends HttpHandler {
         this.request = request;
         String[] lines = request.rawData.split("\r\n");
 
+        if(lines.length==0) return;
+
         parseStartLine(lines[0]);
         parseHeader(lines);
         parseBody();
