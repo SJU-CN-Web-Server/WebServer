@@ -15,7 +15,7 @@ public class RouterHandler extends HttpHandler{
 
     String getAbsPath(HttpRequest request) {
         String basePath = "./";
-        Path path = Paths.get(basePath, request.path == null ? "" : request.path, "hello.txt");
+        Path path = Paths.get(basePath, request.path == null ? "" : request.path);//, "hello.txt");
         return path.toString();
     }
 }

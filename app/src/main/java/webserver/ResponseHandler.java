@@ -34,12 +34,12 @@ public class ResponseHandler extends HttpHandler{
         if (response.contentLength != null) {
             httpMessage.append("Content-Length: ").append(response.contentLength).append("\r\n");
         }
-        // if (response.KeepAlive != null) {
-        //     httpMessage.append("Keep-Alive: ").append(response.KeepAlive).append("\r\n");
-        // }
-        // if (response.Connection != null) {
-        //     httpMessage.append("Connection: ").append(response.Connection).append("\r\n");
-        // }
+         if (response.keepAlive != null) {
+             httpMessage.append("Keep-Alive: ").append(response.keepAlive).append("\r\n");
+         }
+         if (response.connection != null) {
+             httpMessage.append("Connection: ").append(response.connection).append("\r\n");
+         }
         if (response.cache_control != null) {
             httpMessage.append("Cache-Control: ").append(response.cache_control).append("\r\n");
         }

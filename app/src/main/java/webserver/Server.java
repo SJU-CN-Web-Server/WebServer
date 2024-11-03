@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
 import java.util.logging.Logger;
 
 import webserver.data.HttpRequest;
@@ -36,13 +37,12 @@ public final class Server {
     }
 
     public void serve() {
-        do{
-            initializeRequestResponse();
-            getRequest();
-            entryHandler.handle(httpRequest, httpResponse, connectionSocket);
-            sendAvailable(connectionSocket, httpResponse);
-        } while(isConnectionAlive());
-        closeSocket();
+        initializeRequestResponse();
+        getRequest();
+        entryHandler.handle(httpRequest, httpResponse, connectionSocket);
+        sendAvailable(connectionSocket, httpResponse);
+        if(!isConnectionAlive())
+            closeSocket();
     }
 
     private void closeSocket() {
@@ -67,9 +67,11 @@ public final class Server {
             }
             httpRequest.rawData = out.toString();
             logger.info(() -> "요청 받음: " + httpRequest.rawData);
-        }
-        catch(Exception e){
+        } catch(SocketTimeoutException e){
+            System.err.println("소켓 타임아웃 발생");
+        } catch(IOException e){
             System.err.println("클라이언트 요청을 받는 동안 오류 발생" + e.getMessage());
+            closeSocket();
         }
     }
 

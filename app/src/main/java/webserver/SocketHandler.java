@@ -84,7 +84,7 @@ public class SocketHandler {
             writer.flush(); // 버퍼에 저장된 데이터를 즉시 출력하도록 강제
             
             // 메시지 전송 후 클라이언트 소켓 close
-            //connectionSocket.close();
+            connectionSocket.close();
         }
         catch (IOException e) {
             System.err.println("503 응답을 보내는 동안 오류 발생" + e.getMessage());

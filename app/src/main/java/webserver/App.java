@@ -7,6 +7,8 @@ import java.net.Socket;
 
 public class App {
     public static void main(String[] args) {
+        //String cwd = System.getProperty("user.dir");
+        //System.out.println(cwd);
         SocketHandler socketHandler = new SocketHandler(8080, 10);
         socketHandler.startServer();
     }
