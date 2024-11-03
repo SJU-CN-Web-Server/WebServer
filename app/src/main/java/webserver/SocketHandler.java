@@ -1,17 +1,12 @@
 package webserver;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.SocketException;
-import java.net.SocketTimeoutException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import webserver.data.HttpRequest;
 import webserver.data.HttpResponse;
 
 public class SocketHandler {
@@ -71,62 +66,8 @@ public class SocketHandler {
         // 새로운 스레드 사용하여 클라이언트 요청 처리
         threadPool.execute(() -> {
             System.out.println("클라이언트 요청 처리 중");
- 
-            HttpRequest request = new HttpRequest();
-            HttpResponse response = new HttpResponse();
-            
-            HttpHandler httpRequestParser = new HttpRequestParser();
-            // Handler 추가 예정
-            // HttpHandler httpHeaderHandler = new HttpHeaderHandler();
-            KeepAliveHandler keepAliveHandler = new KeepAliveHandler();
-            // HttpHandler httpRequestRouter = new HttpRequestRouter();
-            // HttpHandler cacheHandler = new CacheHandler(); 
-            HttpHandler businessLogicHandler = new BusinessLogicHandler();
-            HttpHandler responseBodyCreator = new ResponseBodyCreator();
-            // HttpHandler httpResponseHandler = new HttpResponseHandler();
-                
-            // Handler 연결
-            // httpRequestParser
-            //     .setNextHandler(HttpHeaderHandler)
-            //     .setNextHandler(keepAliveHandler)
-            //     .setNextHandler(httpRequestRouter)
-            //     .setNextHandler(cacheHandler)
-            //     .setNextHandler(businessLogicHandler)
-            //     .setNextHandler(responseBodyCreator)
-            //     .setNextHandler(httpResponseHandler);
-
-            //request 메세지 처리
-            while(true){
-                try {
-                    String requestString = null;
-                    BufferedReader in = new BufferedReader(new InputStreamReader(connectionSocket.getInputStream()));
-                    StringBuilder requestBuilder = new StringBuilder();
-                    String line;
-                    while(!(line = in.readLine()).isBlank()){
-                        requestBuilder.append(line);
-                    }
-                    requestString = requestBuilder.toString();
-                    request.rawData = requestString;
-                
-                    httpRequestParser.handle(request, response, connectionSocket);
-                    sendAvailable(connectionSocket, response);
-
-                    //keepAlive 검사
-                    if (keepAliveHandler.isKeepAlive()) break;
-                }
-                catch(SocketTimeoutException e){
-                    System.err.println("Socket timed out: " + e.getMessage());
-                    break;
-                } catch (IOException e) {
-                    System.err.println("Error Occured: "+e.getMessage());
-                }
-            }
-
-            try {
-                connectionSocket.close();
-            } catch(IOException es){
-                System.err.println("Failed to close connection socket: "+es.getMessage());
-            }    
+            Server server = new Server(connectionSocket);
+            server.serve();
         });
     }
 

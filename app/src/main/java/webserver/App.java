@@ -3,12 +3,11 @@
  */
 package webserver;
 
-public class App {
-    public String getGreeting() {
-        return "Hello World!";
-    }
+import java.net.Socket;
 
+public class App {
     public static void main(String[] args) {
-        System.out.println(new App().getGreeting());
+        SocketHandler socketHandler = new SocketHandler(8080, 10);
+        socketHandler.startServer();
     }
 }
