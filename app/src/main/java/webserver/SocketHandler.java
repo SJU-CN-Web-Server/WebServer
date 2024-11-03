@@ -68,6 +68,7 @@ public class SocketHandler {
             System.out.println("클라이언트 요청 처리 중");
             Server server = new Server(connectionSocket);
             server.serve();
+            System.out.println("클라이언트 요청 처리 완료");
         });
     }
 

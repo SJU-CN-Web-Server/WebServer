@@ -3,6 +3,9 @@
 package webserver;
 
 import java.net.Socket;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.TimeZone;
 
 import webserver.data.HttpRequest;
 import webserver.data.HttpResponse;
@@ -34,18 +37,28 @@ public class ResponseHandler extends HttpHandler{
         if (response.contentLength != null) {
             httpMessage.append("Content-Length: ").append(response.contentLength).append("\r\n");
         }
-        // if (response.KeepAlive != null) {
-        //     httpMessage.append("Keep-Alive: ").append(response.KeepAlive).append("\r\n");
-        // }
-        // if (response.Connection != null) {
-        //     httpMessage.append("Connection: ").append(response.Connection).append("\r\n");
-        // }
+        if (response.keepAlive != null) {
+            httpMessage.append("Keep-Alive: ").append(response.keepAlive).append("\r\n");
+        }
+        if (response.connection != null) {
+            httpMessage.append("Connection: ").append(response.connection).append("\r\n");
+        }
         if (response.cache_control != null) {
             httpMessage.append("Cache-Control: ").append(response.cache_control).append("\r\n");
         }
         if (response.cache_expires != null) {
             httpMessage.append("Expires: ").append(response.cache_expires).append("\r\n");
         }
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z");
+        dateFormat.setTimeZone(TimeZone.getTimeZone("GMT")); // HTTP Date 헤더는 GMT 시간대를 사용
+
+        Date now = new Date();
+        response._date = now;
+        String dateHeader = dateFormat.format(now);
+        response.date = dateHeader;
+
+        httpMessage.append("Date: ").append(response.date).append("\r\n");
 
         // 빈 줄을 추가하여 헤더와 본문 구분
         httpMessage.append("\r\n");

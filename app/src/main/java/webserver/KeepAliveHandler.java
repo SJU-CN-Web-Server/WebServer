@@ -1,6 +1,7 @@
 package webserver;
 import java.net.Socket;
 import java.net.SocketException;
+import java.util.Date;
 
 import webserver.data.HttpRequest;
 import webserver.data.HttpResponse;
@@ -15,7 +16,8 @@ public class KeepAliveHandler extends HttpHandler{
     // keep-alive 사용 여부
     private boolean keepAlive=true;
     // TTL 서버 기본 설정 5초
-    private int timeout=500000;
+    private int timeout=5000;
+    private HttpResponse response = null;
 
     // 요청 된 메세지 수가 최대 메세지 수 보다 크다면 return true; -> socket close 조건
     public boolean isRequsetLimitExceeded(){
@@ -23,11 +25,19 @@ public class KeepAliveHandler extends HttpHandler{
     }
     // return keep-alive 사용여부; socket close 조건
     public boolean isKeepAlive(){
+        if(response != null
+        && response._date != null
+        && (new Date()).after(new Date(response._date.getTime() + timeout))){
+            System.out.println("timeout");
+            keepAlive=false;
+        }
         return keepAlive;
     }
 
     @Override
     public void process(HttpRequest request, HttpResponse response, Socket connectionSocket) {
+        this.response = response;
+
         requestCount++;
         // request 메세지의 Connection: 헤더가 close이거나 요청된 메세지의 수가 최대 메세지 수 보다 크다면 keep-alive를 close로 설정
         Boolean connection = request.connection.map(conn -> conn.equalsIgnoreCase("close")).orElse(false);
