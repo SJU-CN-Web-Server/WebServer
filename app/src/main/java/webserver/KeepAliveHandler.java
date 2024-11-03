@@ -1,7 +1,7 @@
 package webserver;
 import java.net.*;
 
-import webserver.data.*;;
+import webserver.data.*;
 
 public class KeepAliveHandler extends HttpHandler{
     // 한번의 TCP연결에서 최대로 요청 받을 수 있는 메세지 수

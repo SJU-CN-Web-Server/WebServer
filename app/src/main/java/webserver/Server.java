@@ -37,12 +37,13 @@ public final class Server {
     }
 
     public void serve() {
-        initializeRequestResponse();
-        getRequest();
-        entryHandler.handle(httpRequest, httpResponse, connectionSocket);
-        sendAvailable(connectionSocket, httpResponse);
-        if(!isConnectionAlive())
-            closeSocket();
+        do {
+            initializeRequestResponse();
+            getRequest();
+            entryHandler.handle(httpRequest, httpResponse, connectionSocket);
+            sendAvailable(connectionSocket, httpResponse);
+        } while(!isConnectionAlive());
+        closeSocket();
     }
 
     private void closeSocket() {
