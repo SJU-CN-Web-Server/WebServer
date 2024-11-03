@@ -1,6 +1,5 @@
 package webserver;
 
-import java.io.UnsupportedEncodingException;
 import java.net.Socket;
 
 import webserver.data.HttpRequest;
@@ -61,13 +60,10 @@ public class ResponseBodyCreator extends HttpHandler {
         responseBody.append("</body></html>");
 
         // 응답 객체에 본문 및 기타 정보 설정
-        try {
-            response.body = new String(responseBody.toString().getBytes("UTF-8"), "UTF-8");
-            response.contentType = "text/html";
-            response.contentLength = response.body.length();
-        } catch (UnsupportedEncodingException e) {
-            System.out.println(e.getMessage());
-        }
+        response.body = responseBody.toString();
+        response.contentType = "text/html";
+        response.contentLength = response.body.length();
+
     }
 
     // 오류 응답을 생성하는 메소드
