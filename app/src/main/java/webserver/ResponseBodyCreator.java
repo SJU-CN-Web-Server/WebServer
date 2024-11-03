@@ -11,10 +11,10 @@ public class ResponseBodyCreator extends HttpHandler {
     // HttpRequest와 HttpResponse 객체를 사용하여 응답을 생성
     @Override
     public void process(HttpRequest request, HttpResponse response, Socket connectionSocket) {
-        StringBuilder responseBody = new StringBuilder("<html><!DOCTYPE html><head>\n" + //
-                        "    <meta charset=\"UTF-8\">\n" + //
-                        "    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n" + //
-                        "    <title>" + request.path + "</title>\n" + //
+        StringBuilder responseBody = new StringBuilder("<html><!DOCTYPE html><head>" + //
+                        "<meta charset=\"UTF-8\">" + //
+                        "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">" + //
+                        "<title>" + request.path + "</title>" + //
                         "</head><body>"); 
 
         if (response.status == 200) { // 상태 코드가 200이면 성공적인 응답이므로 본문 생성
@@ -61,8 +61,9 @@ public class ResponseBodyCreator extends HttpHandler {
 
         // 응답 객체에 본문 및 기타 정보 설정
         response.body = responseBody.toString();
+        // System.out.println("responseBODY:"+response.body);
         response.contentType = "text/html";
-        response.contentLength = response.body.length();
+        response.contentLength = response.body.getBytes().length+1;
 
     }
 

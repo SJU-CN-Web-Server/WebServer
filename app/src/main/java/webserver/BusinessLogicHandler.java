@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.net.Socket;
 import java.nio.file.Files;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import webserver.data.HttpRequest;
 import webserver.data.HttpResponse;
@@ -18,7 +20,6 @@ public class BusinessLogicHandler extends HttpHandler {
     public void process(HttpRequest request, HttpResponse response, Socket connectionSocket) {
         // 요청된 리소스 경로를 가져옴
         currentResourcePath = request.absPath;  // 사용자가 요청한 파일의 경로를 가져옴
-        System.out.println("currentResourcePath: " + currentResourcePath);
 
         // 멤버 변수인 resource 설정
         resource = new File(currentResourcePath);   
@@ -56,10 +57,11 @@ public class BusinessLogicHandler extends HttpHandler {
             File[] listFiles = resource.listFiles();
             String listFilesString = "";
             String directoryPostfix;
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH시 mm분 ss초");
 
             for (File file : listFiles) {
                 directoryPostfix = file.isDirectory() ? "/" : "";
-                listFilesString += (file.getAbsolutePath() + ":" + file.getName() + directoryPostfix + ":" + file.length() + "bytes:" + file.lastModified() + "!");
+                listFilesString += (file.getName() + directoryPostfix + ":" + file.length() + "bytes:" + dateFormat.format(new Date(file.lastModified())) + "!");
             }
 
             return listFilesString; // 디렉토리의 경우 파일 목록 반환

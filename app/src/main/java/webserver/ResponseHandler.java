@@ -12,7 +12,7 @@ public class ResponseHandler extends HttpHandler{
     public void process(HttpRequest request, HttpResponse response, Socket connectionSocket) {
         String responseMessage = convertToHttpMessage(response);
         response.rawData = responseMessage;
-        System.out.println(responseMessage);
+        // System.out.println(responseMessage);
         //socket.write(responseMessage); //psudo code
     }
 

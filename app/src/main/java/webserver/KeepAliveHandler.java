@@ -15,7 +15,7 @@ public class KeepAliveHandler extends HttpHandler{
     // keep-alive 사용 여부
     private boolean keepAlive=true;
     // TTL 서버 기본 설정 5초
-    private int timeout=5000;
+    private int timeout=500000;
 
     // 요청 된 메세지 수가 최대 메세지 수 보다 크다면 return true; -> socket close 조건
     public boolean isRequsetLimitExceeded(){

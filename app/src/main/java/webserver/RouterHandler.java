@@ -67,7 +67,7 @@ public class RouterHandler extends HttpHandler {
                 return fileSystemPath;
             }
         }
-        return "/var/tmp/html";  // 기본 경로 반환 (필요시 수정 가능)
+        return "/var/www/html";  // 기본 경로 반환 (필요시 수정 가능)
     }
 
 }

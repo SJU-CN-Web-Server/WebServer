@@ -1,9 +1,9 @@
 package webserver;
 
 import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.logging.Logger;
 
@@ -38,9 +38,11 @@ public final class Server {
     public void serve() {
         do{
             initializeRequestResponse();
-            getRequest();
-            entryHandler.handle(httpRequest, httpResponse, connectionSocket);
-            sendAvailable(connectionSocket, httpResponse);
+            if(getRequest()){ //에러발생하는 부분
+                entryHandler.handle(httpRequest, httpResponse, connectionSocket);
+                sendAvailable(connectionSocket, httpResponse);
+                System.out.println("hmm");
+            }
         } while(isConnectionAlive());
         closeSocket();
     }
@@ -54,24 +56,32 @@ public final class Server {
         }
     }
 
-    private void getRequest(){
+    private boolean getRequest(){
+        Boolean flag = false;
         try{
             InputStream in = connectionSocket.getInputStream();
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             byte[] buffer = new byte[1024];
             int length;
             while((length = in.read(buffer)) != -1){
+                flag = true;
                 out.write(buffer, 0, length);
-                if(length < 1024){
+                String currentData = out.toString("UTF-8");
+
+                // 요청이 끝났는지 확인: 빈 줄 "\r\n\r\n"이 있으면 완료로 판단
+                if (currentData.contains("\r\n\r\n")) {
+                    // requestComplete = true;
                     break;
                 }
             }
             httpRequest.rawData = out.toString();
             // logger.info(() -> "요청 받음: " + httpRequest.rawData);
+            return flag;
         }
         catch(IOException e){
             logger.warning(() -> "클라이언트 요청을 받는 동안 오류 발생" + e.getMessage());
         }
+        return false;
     }
 
     public boolean isConnectionAlive() {
@@ -105,12 +115,22 @@ public final class Server {
 
     private void sendAvailable(Socket connectionSocket, HttpResponse response) {
         try {
-            PrintWriter writer = new PrintWriter(connectionSocket.getOutputStream(), true);
+            DataOutputStream out = new DataOutputStream(connectionSocket.getOutputStream());
+            byte[] responseBytes = response.rawData.getBytes();
+            byte[] newlineBytes = "\r".getBytes();
+            byte[] combinedBytes = new byte[responseBytes.length + newlineBytes.length];
+            System.arraycopy(responseBytes, 0, combinedBytes, 0, responseBytes.length);
+            System.arraycopy(newlineBytes, 0, combinedBytes, responseBytes.length, newlineBytes.length);
+            out.write(combinedBytes);
+            out.flush();
+            // PrintWriter writer = new PrintWriter(connectionSocket.getOutputStream(), true);
             
-            // HTTP 응답 헤더 작성 후 클라이언트에게 전송
-            writer.println(response.rawData);
-            writer.println();
-            writer.flush(); // 버퍼에 저장된 데이터를 즉시 출력하도록 강제
+            // // HTTP 응답 헤더 작성 후 클라이언트에게 전송
+            // // System.out.println("final"+response.rawData);
+            // writer.println(response.rawData);
+            // //writer.println();
+            // writer.flush(); // 버퍼에 저장된 데이터를 즉시 출력하도록 강제
+            // writer.close();
             
             // 메시지 전송 후 클라이언트 소켓 close
             //connectionSocket.close();
@@ -118,5 +138,4 @@ public final class Server {
         catch (IOException e) {
             System.err.println("응답을 보내는 동안 오류 발생" + e.getMessage());
         }
-    }
-}
+    }}
