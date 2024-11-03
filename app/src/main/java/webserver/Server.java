@@ -48,6 +48,7 @@ public final class Server {
     private void closeSocket() {
         try {
             connectionSocket.close();
+            SocketHandler.decreaseConnection();
         } catch (Exception e) {
             System.err.println("소켓 닫는 중 오류 발생" + e.getMessage());
         }
@@ -66,10 +67,10 @@ public final class Server {
                 }
             }
             httpRequest.rawData = out.toString();
-            logger.info(() -> "요청 받음: " + httpRequest.rawData);
+            // logger.info(() -> "요청 받음: " + httpRequest.rawData);
         }
-        catch(Exception e){
-            System.err.println("클라이언트 요청을 받는 동안 오류 발생" + e.getMessage());
+        catch(IOException e){
+            logger.warning(() -> "클라이언트 요청을 받는 동안 오류 발생" + e.getMessage());
         }
     }
 

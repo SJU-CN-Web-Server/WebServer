@@ -1,6 +1,7 @@
 package webserver;
 
 import java.net.Socket;
+import java.util.Optional;
 
 import webserver.data.HttpRequest;
 import webserver.data.HttpResponse;
@@ -17,7 +18,6 @@ public class HttpRequestParser extends HttpHandler {
         parseStartLine(lines[0]);
         parseHeader(lines);
         parseBody();
-        System.out.println("Request: " + request.toString());
     }
 
     // HttpRequest의 첫 줄(method, URL, version) Parsing하여 Request 객체에 추가
@@ -54,10 +54,12 @@ public class HttpRequestParser extends HttpHandler {
                         request.acceptCharset = header[1];
                         break;
                     case "connection" :
-                        request.connection = header[1];
+                        request.connection = Optional.ofNullable(header[1]);
                         break;
                     case "keep-alive" :
                         request.keepAlive = header[1];
+                        break;
+                    default:
                         break;
                     }
                 }

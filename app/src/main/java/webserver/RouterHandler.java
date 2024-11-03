@@ -11,11 +11,12 @@ public class RouterHandler extends HttpHandler{
     @Override
     public void process(HttpRequest request, HttpResponse response, Socket clientSocket) {
         request.absPath = getAbsPath(request);
+        System.out.println("absPath: " + request.absPath);
     }
 
     String getAbsPath(HttpRequest request) {
         String basePath = "./";
-        Path path = Paths.get(basePath, request.path == null ? "" : request.path, "hello.txt");
+        Path path = Paths.get(basePath, request.path == null ? "" : request.path, "hello.txt").toAbsolutePath();
         return path.toString();
     }
 }

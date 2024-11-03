@@ -13,17 +13,14 @@ public class SocketHandler {
     // 클라이언트 연결 받을 서버 소켓 생성
     private ServerSocket welcomeSocket;
     // 서버에서 허용할 최대 연결 수 저장
-    private int maxConnection;
+    private Integer maxConnection = 0;
+    private static Integer currentConnection = 0;
     // threadPool 사용하여 멀티 스레딩 환경 관리
     private ExecutorService threadPool;
-    // maxConnection 초과 여부
-    private boolean isConnectionMax;
-
 
     // 생성자 : 서버 소켓을 초기화하고 maxConnection 설정
-    public SocketHandler(int port, int maxConnection) {
+    public SocketHandler(Integer port, Integer maxConnection) {
         this.maxConnection = maxConnection;
-        this.isConnectionMax = false;
 
         // maxConnection만큼 스레드를 만들어 멀티 스레딩 환경 관리
         this.threadPool = Executors.newFixedThreadPool(maxConnection);
@@ -55,9 +52,14 @@ public class SocketHandler {
         }
     }
 
+    public static void decreaseConnection() {
+        SocketHandler.currentConnection--;
+    }
+
     // maxConnection 확인하고 초과 시 sendUnavailable() 호출. 그렇지 않으면 클라이언트 요청 처리
     private void handleClientRequest(Socket connectionSocket) {
-        if (isConnectionMax) {
+        SocketHandler.currentConnection++;
+        if (this.currentConnection > this.maxConnection) {
             // maxConnection 초과 시 503 에러 메시지
             sendUnavailable(connectionSocket);
             return;

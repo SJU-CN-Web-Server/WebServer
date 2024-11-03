@@ -1,7 +1,10 @@
 package webserver;
-import java.net.*;
+import java.net.Socket;
+import java.net.SocketException;
 
-import webserver.data.*;;
+import webserver.data.HttpRequest;
+import webserver.data.HttpResponse;
+;
 
 public class KeepAliveHandler extends HttpHandler{
     // 한번의 TCP연결에서 최대로 요청 받을 수 있는 메세지 수
@@ -27,7 +30,8 @@ public class KeepAliveHandler extends HttpHandler{
     public void process(HttpRequest request, HttpResponse response, Socket connectionSocket) {
         requestCount++;
         // request 메세지의 Connection: 헤더가 close이거나 요청된 메세지의 수가 최대 메세지 수 보다 크다면 keep-alive를 close로 설정
-        if (request.connection.equalsIgnoreCase("close")||isRequsetLimitExceeded()){
+        Boolean connection = request.connection.map(conn -> conn.equalsIgnoreCase("close")).orElse(false);
+        if (Boolean.TRUE.equals(connection) || isRequsetLimitExceeded()){
             response.connection="close";
             response.keepAlive=null;
             keepAlive=false;
