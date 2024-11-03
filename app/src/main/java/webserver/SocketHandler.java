@@ -6,6 +6,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
 
 import webserver.data.HttpResponse;
 
@@ -16,14 +17,11 @@ public class SocketHandler {
     private int maxConnection;
     // threadPool 사용하여 멀티 스레딩 환경 관리
     private ExecutorService threadPool;
-    // maxConnection 초과 여부
-    private boolean isConnectionMax;
 
 
     // 생성자 : 서버 소켓을 초기화하고 maxConnection 설정
     public SocketHandler(int port, int maxConnection) {
         this.maxConnection = maxConnection;
-        this.isConnectionMax = false;
 
         // maxConnection만큼 스레드를 만들어 멀티 스레딩 환경 관리
         this.threadPool = Executors.newFixedThreadPool(maxConnection);
@@ -57,7 +55,7 @@ public class SocketHandler {
 
     // maxConnection 확인하고 초과 시 sendUnavailable() 호출. 그렇지 않으면 클라이언트 요청 처리
     private void handleClientRequest(Socket connectionSocket) {
-        if (isConnectionMax) {
+        if (((ThreadPoolExecutor) this.threadPool).getActiveCount() >= this.maxConnection) {
             // maxConnection 초과 시 503 에러 메시지
             sendUnavailable(connectionSocket);
             return;

@@ -62,7 +62,8 @@ public class ResponseBodyCreator extends HttpHandler {
         // 응답 객체에 본문 및 기타 정보 설정
         response.body = responseBody.toString();
         response.contentType = "text/html";
-        response.contentLength = response.body.length();
+        response.contentLength = response.body.getBytes().length;
+        //response.contentLength = response.body.length();
 
     }
 
