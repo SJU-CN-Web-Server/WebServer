@@ -37,12 +37,14 @@ public final class Server {
     }
 
     public void serve() {
+        initializeRequestResponse();
         do {
-            initializeRequestResponse();
             getRequest();
             entryHandler.handle(httpRequest, httpResponse, connectionSocket);
             sendAvailable(connectionSocket, httpResponse);
-        } while(!isConnectionAlive());
+            System.out.println("\nThread is Run in serve while()\n");
+        } while(isConnectionAlive());
+        System.out.println("\nThread get out of loop\n");
         closeSocket();
     }
 
@@ -71,9 +73,10 @@ public final class Server {
             logger.info(() -> "요청 받음: " + httpRequest.rawData);
         } catch(SocketTimeoutException e){
             System.err.println("소켓 타임아웃 발생");
+            closeSocket();
         } catch(IOException e){
             System.err.println("클라이언트 요청을 받는 동안 오류 발생" + e.getMessage());
-            closeSocket();
+            //closeSocket();
         }
     }
 
