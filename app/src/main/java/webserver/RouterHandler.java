@@ -1,4 +1,4 @@
-/*package webserver;
+package webserver;
 
 import java.net.Socket;
 import java.nio.file.Path;
@@ -41,7 +41,7 @@ public class RouterHandler extends HttpHandler {
                 return urlPath.substring(basePattern.length());
             }
         }
-        return "";  // 패턴이 없는 경우 빈 문자열 반환
+        return urlPath;  // 패턴이 없는 경우 빈 문자열 반환
     }
     
     // URL 경로에 해당하는 URL 패턴을 찾는 메서드
@@ -68,26 +68,5 @@ public class RouterHandler extends HttpHandler {
             }
         }
         return System.getProperty("user.dir");  // 기본 경로 반환 (필요시 수정 가능)
-    }
-
-}
-*/
-
-package webserver;
-
-import java.net.Socket;
-
-import webserver.data.HttpRequest;
-import webserver.data.HttpResponse;
-
-public class RouterHandler extends HttpHandler{
-    @Override
-    public void process(HttpRequest request, HttpResponse response, Socket clientSocket) {
-        request.absPath = getAbsPath(request);
-    }
-
-    String getAbsPath(HttpRequest request) {
-        String basePath = System.getProperty("user.dir");
-        return basePath + request.path;
     }
 }

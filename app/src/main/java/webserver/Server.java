@@ -5,6 +5,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
+import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.util.logging.Logger;
 
@@ -37,20 +38,42 @@ public final class Server {
         initializeHandlerChain();
     }
 
-    public void serve() {
+    public void serve(){
         do{
             initializeRequestResponse();
             if(getRequest()){ //에러발생하는 부분
                 // System.out.println("requestString: "+httpRequest.rawData);
                 entryHandler.handle(httpRequest, httpResponse, connectionSocket);
                 sendAvailable(connectionSocket, httpResponse);
-                // System.out.println("hmm");
             }
         } while(isConnectionAlive());
         closeSocket();
-        while(true);
     }
 
+/*
+    public void serve() {
+        try {
+            connectionSocket.setSoTimeout(5000);
+            try {
+                do{
+                    initializeRequestResponse();
+                    if(getRequest()){ //에러발생하는 부분
+                        // System.out.println("requestString: "+httpRequest.rawData);
+                        entryHandler.handle(httpRequest, httpResponse, connectionSocket);
+                        sendAvailable(connectionSocket, httpResponse);
+                    }
+                } while(isConnectionAlive());
+                closeSocket();
+            } catch (SocketTimeoutException e) {
+                System.out.println("TimeOut!!");
+                closeSocket();
+            }
+        } catch (SocketException e) {
+            System.out.println("타임아웃을 설정하는 동안 오류발생"+e.getMessage());
+            closeSocket();
+        }
+    }
+*/
     private void closeSocket() {
         try {
             connectionSocket.close();
@@ -60,7 +83,7 @@ public final class Server {
         }
     }
 
-    private boolean getRequest(){
+    private boolean getRequest() {
         String requestString = null;
         StringBuilder requestBuilder = new StringBuilder();
         String line;
@@ -95,7 +118,8 @@ public final class Server {
             return flag;
         } catch(SocketTimeoutException e){
             System.err.println("Socket timed out: " + e.getMessage());
-        } catch (IOException e) {
+        } 
+        catch (IOException e) {
             System.err.println("Error Occured: "+e.getMessage());
         }
                 
