@@ -82,7 +82,7 @@ public class RouterHandler extends HttpHandler {
 
             String regre = urlPattern.replace("*", ".*");
             // urlPattern의 '*'을 정규식 '.*'로 변환하여 매칭 검사
-            System.out.println("regre: " + regre);
+            // System.out.println("regre: " + regre);
 
             if (urlPath.matches(regre)) {
                 return fileSystemPath;

@@ -32,12 +32,13 @@ public final class Server {
 
     public Server(Socket connectionSocket) {
         this.connectionSocket = connectionSocket;
-        logger.info(() -> "\nConnection Socket ID: " + connectionSocket.hashCode());
+        System.out.println("\nConnection Socket ID: " + connectionSocket.hashCode());
         initializeHandler();
         initializeHandlerChain();
     }
 
     public void serve() {
+        System.out.println("THREAD ID: " + Thread.currentThread().threadId());
         do{
             initializeRequestResponse();
             if(getRequest()){ //에러발생하는 부분
