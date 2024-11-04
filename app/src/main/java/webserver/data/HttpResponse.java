@@ -16,4 +16,5 @@ public class HttpResponse {
     public String last_modified;
     public String date;
     public Date _date;
+    public String allow;
 }

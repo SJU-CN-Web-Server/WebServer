@@ -8,16 +8,41 @@ import webserver.data.HttpResponse;
 
 public class HttpRequestParser extends HttpHandler {
     private HttpRequest request;
+    private HttpResponse response;
 
     // 전체 parsing 과정 수행. 최종 Request 반환
     @Override
     public void process(HttpRequest request, HttpResponse response, Socket clientSocket) {
         this.request = request;
+        this.response = response;
         String[] lines = request.rawData.split("\r\n");
 
         parseStartLine(lines[0]);
         parseHeader(lines);
         parseBody();
+        if (!isMethodAlloewd()) {
+            setGoToResponse(true);
+            handleMethodNotAllowed();
+        }
+    }
+
+    private boolean isMethodAlloewd(){
+        return (request.method.equalsIgnoreCase("GET")||request.method.equalsIgnoreCase("HEAD"));
+    }
+
+    private void handleMethodNotAllowed(){
+        response.status = 405;
+        response.allow = "HEAD, GET";
+        response.contentLength = 512;
+        response.contentType = "text/html; charset=UTF-8";
+        //Hard-code:body부분 수정 필요
+        response.body = "<html>\n" +
+                        "<head><title>405 Method Not Allowed</title></head>\n" + //
+                        "<body>\n" +
+                        "<h1>Method Not Allowed</h1>\n" +
+                        "<p>The requested method PUT is not allowed for the URL /example.</p>\n" + //
+                        "</body>\n" +
+                        "</html>";
     }
 
     // HttpRequest의 첫 줄(method, URL, version) Parsing하여 Request 객체에 추가

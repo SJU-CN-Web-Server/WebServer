@@ -182,4 +182,29 @@ public final class Server {
         catch (IOException e) {
             System.err.println("응답을 보내는 동안 오류 발생" + e.getMessage());
         }
-    }}
+    }
+
+    
+    /* GET, HEAD 이외의 메서드를 처리 테스트용
+    private boolean getRequestForTest() {
+        StringBuilder requestBuilder = new StringBuilder();
+        
+        requestBuilder.append("PUT / HTTP/1.1\r\n");
+        requestBuilder.append("Host: 127.0.0.1\r\n");
+        requestBuilder.append("Content-Type: application/json\r\n");
+        requestBuilder.append("Content-Length: 82\r\n");
+        requestBuilder.append("\r\n");
+        requestBuilder.append("{");
+        requestBuilder.append("\"name\": \"John Doe\",");
+        requestBuilder.append("\"email\": \"john.doe@example.com\",");
+        requestBuilder.append("\"role\": \"admin\"");
+        requestBuilder.append("}\r\n");
+    
+        // 작성한 요청 메시지를 httpRequest 객체에 할당
+        httpRequest.rawData = requestBuilder.toString();
+        
+        // 플래그 반환 (true는 요청이 정상적으로 작성되었음을 의미)
+        return true;
+    }
+    */
+}
