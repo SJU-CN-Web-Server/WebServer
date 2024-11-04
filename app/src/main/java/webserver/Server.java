@@ -41,6 +41,7 @@ public final class Server {
         do{
             initializeRequestResponse();
             if(getRequest()){ //에러발생하는 부분
+                // System.out.println("requestString: "+httpRequest.rawData);
                 entryHandler.handle(httpRequest, httpResponse, connectionSocket);
                 sendAvailable(connectionSocket, httpResponse);
                 // System.out.println("hmm");
@@ -156,8 +157,10 @@ public final class Server {
     private void sendAvailable(Socket connectionSocket, HttpResponse response) {
         try {
             DataOutputStream out = new DataOutputStream(connectionSocket.getOutputStream());
+            // System.out.println(response.rawData);
+
             byte[] responseBytes = response.rawData.getBytes();
-            byte[] newlineBytes = "\r".getBytes();
+            byte[] newlineBytes = "\r\n".getBytes();
             byte[] combinedBytes = new byte[responseBytes.length + newlineBytes.length];
             System.arraycopy(responseBytes, 0, combinedBytes, 0, responseBytes.length);
             System.arraycopy(newlineBytes, 0, combinedBytes, responseBytes.length, newlineBytes.length);

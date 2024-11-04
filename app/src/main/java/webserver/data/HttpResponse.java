@@ -13,6 +13,7 @@ public class HttpResponse {
     public String rawData; //추가
     public String cache_control;
     public String cache_expires;
+    public String last_modified;
     public String date;
     public Date _date;
 }

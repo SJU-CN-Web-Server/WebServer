@@ -4,56 +4,89 @@ import java.net.Socket;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Instant;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
+import java.time.temporal.ChronoField;
+import java.time.temporal.ChronoUnit;
 
 import webserver.data.HttpRequest;
 import webserver.data.HttpResponse;
 
 public class HttpCachingHandler extends HttpHandler{
+    private Instant lastModified;
+    private Instant ifModifiedSince;
+    private HttpRequest httpRequest;
+    private HttpResponse httpResponse;
+    DateTimeFormatter formatter1 = DateTimeFormatter.ofPattern("EEE, dd MMM yyyy HH:mm:ss 'GMT'")
+            .withZone(ZoneOffset.UTC);
+
+    DateTimeFormatter formatter = new DateTimeFormatterBuilder()
+        .appendPattern("EEE, dd MMM yyyy HH:mm:ss")
+        .parseDefaulting(ChronoField.OFFSET_SECONDS, 0)
+        .appendLiteral(" GMT")
+        .toFormatter();
+
     @Override
     public void process(HttpRequest request, HttpResponse response, Socket clientSocket) {
+        this.httpRequest = request;
+        this.httpResponse = response;
         if(request.if_modified_since != null
         || request.if_none_match != null) {
-            handleCacheRequest(request, response);
+            handleCacheRequest();
         } else {
-            handleNonCacheRequest(response);
+            handleNonCacheRequest();
         }
     }
 
-    private void handleCacheRequest(HttpRequest request, HttpResponse response){
+    private void handleCacheRequest(){
+        setLastModifiedTime();
+        setIfmodifiedSinceTime();
         //캐시 로직 처리
-        String filePath = request.absPath;
-        Path path = Path.of(filePath);
         try{
-            Instant lastModified = Files.getLastModifiedTime(path).toInstant();
-            Instant ifModifiedSince = Instant.parse(request.if_modified_since);
-
             if(lastModified.isAfter(ifModifiedSince)){
-                response.status = 200;
-                // response.body = "Hello World";
-                // response.contentLength = 11;
-                // response.contentType = "text/plain";
-                response.cache_control = "public, max-age=60"; //temporary
-                response.cache_expires = "Wed, 21 Oct 2015 07:28:00 GMT"; // temporary
+                httpResponse.status = 200;
+                httpResponse.cache_control = "public, max-age=3600"; //temporary
+
+                // 포맷터 설정
+
+                // Instant를 ZonedDateTime으로 변환 후 포맷
+                String formattedDate = formatter1.format(lastModified);
+
+                httpResponse.last_modified = formattedDate;
             }
             else{
                 // 요청된 캐시가 유효함. 캐시 데이터 반환을 위해 304 상태 코드 반환
-                response.status = 304;
-                response.body = "";
-                response.contentLength = 0;
+                httpResponse.status = 304;
+                httpResponse.body = "\r\n";
+                httpResponse.contentLength = 0;
                 setGoToResponse(true);
             }
         } catch (Exception e){
             e.printStackTrace();
         }
     }
+    private void handleNonCacheRequest(){
+        setLastModifiedTime();
+        String formattedDate = formatter1.format(lastModified);
+        httpResponse.status = 200;
+        httpResponse.cache_control = "max-age=6"; //temporary, 캐시 정책 설정필요.
+        httpResponse.last_modified = formattedDate; // temporary, 캐시 정책 설정필요.
+        // response.cache_expires = "Wed, 21 Oct 2030 07:28:00 GMT"; // temporary, 캐시 정책 설정필요.
+    }
 
-    private void handleNonCacheRequest(HttpResponse response){
-        //캐시 로직 처리
-        response.status = 200;
-        // response.body = "Hello World";
-        // response.contentLength = 11;
-        // response.contentType = "text/plain";
-        response.cache_control = "public, max-age=60"; //temporary, 캐시 정책 설정필요.
-        response.cache_expires = "Wed, 21 Oct 2015 07:28:00 GMT"; // temporary, 캐시 정책 설정필요.
+    //utils
+    private void setLastModifiedTime() {
+        try {
+            Path path = Path.of(httpRequest.absPath);
+            this.lastModified = Files.getLastModifiedTime(path).toInstant().truncatedTo(ChronoUnit.SECONDS);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    private void setIfmodifiedSinceTime(){
+        ZonedDateTime ifModifiedSinceZdt = ZonedDateTime.parse(this.httpRequest.if_modified_since, formatter);
+        ifModifiedSince = ifModifiedSinceZdt.toInstant();
     }
 }

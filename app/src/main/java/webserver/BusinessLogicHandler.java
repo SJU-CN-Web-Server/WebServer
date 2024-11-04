@@ -18,6 +18,9 @@ public class BusinessLogicHandler extends HttpHandler {
 
     @Override
     public void process(HttpRequest request, HttpResponse response, Socket connectionSocket) {
+        if(this.isgoToResponse()){
+            return;
+        }
         // 요청된 리소스 경로를 가져옴
         currentResourcePath = request.absPath;  // 사용자가 요청한 파일의 경로를 가져옴
 

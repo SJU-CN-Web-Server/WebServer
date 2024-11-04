@@ -59,6 +59,9 @@ public class HttpRequestParser extends HttpHandler {
                     case "keep-alive" :
                         request.keepAlive = header[1];
                         break;
+                    case "if-modified-since" :
+                        request.if_modified_since = header[1];
+                        break;
                     default:
                         break;
                     }

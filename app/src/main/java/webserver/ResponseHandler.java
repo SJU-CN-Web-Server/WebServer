@@ -15,6 +15,7 @@ public class ResponseHandler extends HttpHandler{
     public void process(HttpRequest request, HttpResponse response, Socket connectionSocket) {
         String responseMessage = convertToHttpMessage(response);
         response.rawData = responseMessage;
+        if(isgoToResponse()) setGoToResponse(false);
         // System.out.println(responseMessage);
         //socket.write(responseMessage); //psudo code
     }
@@ -48,6 +49,12 @@ public class ResponseHandler extends HttpHandler{
         }
         if (response.cache_expires != null) {
             httpMessage.append("Expires: ").append(response.cache_expires).append("\r\n");
+        }
+
+        if(response.last_modified != null) {
+            SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z");
+            dateFormat.setTimeZone(TimeZone.getTimeZone("GMT")); // HTTP Date 헤더는 GMT 시간대를 사용
+            httpMessage.append("Last-Modified: ").append(response.last_modified).append("\r\n");
         }
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z");

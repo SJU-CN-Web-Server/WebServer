@@ -11,6 +11,9 @@ public class ResponseBodyCreator extends HttpHandler {
     // HttpRequest와 HttpResponse 객체를 사용하여 응답을 생성
     @Override
     public void process(HttpRequest request, HttpResponse response, Socket connectionSocket) {
+        if(this.isgoToResponse()){
+            return;
+        }
         StringBuilder responseBody = new StringBuilder("<html><!DOCTYPE html><head>" + //
                         "<meta charset=\"UTF-8\">" + //
                         "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">" + //
