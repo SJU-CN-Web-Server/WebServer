@@ -1,0 +1,12 @@
+{
+    "mappings": [
+        {
+            "urlPattern": "/tmp/*",
+            "fileSystemPath": "/var/www/html/tmp"
+        },
+        {
+            "urlPattern": "/docs/*",
+            "fileSystemPath": "/var/www/html/docs"
+        }
+    ]
+}
