@@ -18,7 +18,7 @@ public class BusinessLogicHandler extends HttpHandler {
 
     @Override
     public void process(HttpRequest request, HttpResponse response, Socket connectionSocket) {
-        if(this.isgoToResponse()){
+        if(isgoToResponse()){
             return;
         }
         // 요청된 리소스 경로를 가져옴

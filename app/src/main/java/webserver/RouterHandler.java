@@ -1,4 +1,4 @@
-package webserver;
+/*package webserver;
 
 import java.net.Socket;
 import java.nio.file.Path;
@@ -67,7 +67,27 @@ public class RouterHandler extends HttpHandler {
                 return fileSystemPath;
             }
         }
-        return "/var/www/html";  // 기본 경로 반환 (필요시 수정 가능)
+        return System.getProperty("user.dir");  // 기본 경로 반환 (필요시 수정 가능)
     }
 
+}
+*/
+
+package webserver;
+
+import java.net.Socket;
+
+import webserver.data.HttpRequest;
+import webserver.data.HttpResponse;
+
+public class RouterHandler extends HttpHandler{
+    @Override
+    public void process(HttpRequest request, HttpResponse response, Socket clientSocket) {
+        request.absPath = getAbsPath(request);
+    }
+
+    String getAbsPath(HttpRequest request) {
+        String basePath = System.getProperty("user.dir");
+        return basePath + request.path;
+    }
 }
