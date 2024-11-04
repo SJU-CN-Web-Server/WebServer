@@ -62,6 +62,10 @@ public class BusinessLogicHandler extends HttpHandler {
             String directoryPostfix;
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH시 mm분 ss초");
 
+            if (listFiles == null || listFiles.length == 0) {
+                return ""; // 빈 디렉토리의 경우 빈 문자열 반환
+            }
+            
             for (File file : listFiles) {
                 directoryPostfix = file.isDirectory() ? "/" : "";
                 listFilesString += (file.getName() + directoryPostfix + ":" + file.length() + "bytes:" + dateFormat.format(new Date(file.lastModified())) + "!");

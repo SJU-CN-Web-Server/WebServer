@@ -31,6 +31,7 @@ public class SocketHandler {
         catch (IOException e) {
             System.err.println("서버 소켓 생성하는 동안 오류 발생" + e.getMessage());
         }
+        
     }
 
     // 서버 시작하고 클라이언트 연결 대기. 클라이언트 연결되면 handleClientRequest() 호출
