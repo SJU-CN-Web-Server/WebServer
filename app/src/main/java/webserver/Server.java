@@ -48,6 +48,7 @@ public final class Server {
             }
         } while(isConnectionAlive());
         closeSocket();
+        while(true);
     }
 
     private void closeSocket() {
