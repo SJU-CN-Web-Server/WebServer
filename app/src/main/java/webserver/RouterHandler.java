@@ -1,5 +1,6 @@
 package webserver;
 
+import java.io.File;
 import java.io.InputStream;
 import java.net.Socket;
 import java.nio.file.Path;
@@ -32,7 +33,9 @@ public class RouterHandler extends HttpHandler {
         ObjectMapper objectMapper = new ObjectMapper();
         try (InputStream input = getClass().getClassLoader().getResourceAsStream("location.json")) {
             if (input == null) {
-                throw new IllegalStateException("Could not find location.json file in resources");
+                // throw new IllegalStateException("Could not find location.json file in resources");
+                System.out.println("Could not find location.json file in resources, use default mappings");
+                return;
             }
             // JSON 파일을 Java 객체로 변환
             Map<String, List<Map<String, String>>> jsonMap = objectMapper.readValue(input, Map.class);
@@ -88,7 +91,7 @@ public class RouterHandler extends HttpHandler {
                 return fileSystemPath;
             }
         }
-        return "/var/www/html";  // 기본 경로 반환 (필요시 수정 가능)
+        return System.getProperty("user.home") + File.separator + "html"; // 기본 경로 반환 (필요시 수정 가능)
     }
 
 }
