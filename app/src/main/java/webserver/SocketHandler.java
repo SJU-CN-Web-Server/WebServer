@@ -13,36 +13,25 @@ public class SocketHandler {
     private ServerSocket welcomeSocket;
     // 서버에서 허용할 최대 연결 수 저장
     private Integer maxConnection = 0;
-    private static Integer currentConnection = 0;
+    //private static Integer currentConnection = 0;
     // threadPool 사용하여 멀티 스레딩 환경 관리
     private ExecutorService threadPool;
 
     // 생성자 : 서버 소켓을 초기화하고 maxConnection 설정
-    public SocketHandler(Integer port, Integer maxConnection) {
+    public SocketHandler(Integer port, Integer maxConnection) throws IOException{
+        welcomeSocket = new ServerSocket(port);
+        threadPool = Executors.newFixedThreadPool(maxConnection);
         this.maxConnection = maxConnection;
-
-        // maxConnection만큼 스레드를 만들어 멀티 스레딩 환경 관리
-        this.threadPool = Executors.newFixedThreadPool(maxConnection);
-
-        try {
-            //지정된 포트 번호로 서버 소켓 생성
-            this.welcomeSocket = new ServerSocket(port);
-        } 
-        catch (IOException e) {
-            System.err.println("서버 소켓 생성하는 동안 오류 발생" + e.getMessage());
-        }
-        
     }
-
+    
     // 서버 시작하고 클라이언트 연결 대기. 클라이언트 연결되면 handleClientRequest() 호출
     public void startServer() {
         System.out.println("서버 시작");
-
         while(true) {
             try {
                 // 클라이언트 연결 요청 기다림
                 Socket connectionSocket = welcomeSocket.accept();
-
+                
                 // 클라이언트 연결 처리
                 handleClientRequest(connectionSocket);
             }
@@ -52,27 +41,38 @@ public class SocketHandler {
         }
     }
 
-    public static void decreaseConnection() {
-        SocketHandler.currentConnection--;
-    }
-
     // maxConnection 확인하고 초과 시 sendUnavailable() 호출. 그렇지 않으면 클라이언트 요청 처리
     private void handleClientRequest(Socket connectionSocket) {
-        SocketHandler.currentConnection++;
-        // if (this.currentConnection > this.maxConnection) {
         if (((ThreadPoolExecutor) this.threadPool).getActiveCount() >= this.maxConnection){
             // maxConnection 초과 시 503 에러 메시지
             sendUnavailable(connectionSocket);
             return;
         }
 
+        threadPool.execute(()->{
+            try {
+                Server server = new Server(connectionSocket);
+                server.serve();
+            } catch (IOException e) {
+                System.err.println("serve에 실패했습니다.");
+            } finally {
+                try{
+                    connectionSocket.close();
+                } catch (IOException e){
+                    System.err.println("소켓을 닫는 중 오류가 발생");
+                }
+            }
+
+        });
+
+        /*
         // 새로운 스레드 사용하여 클라이언트 요청 처리
         threadPool.execute(() -> {
             System.out.println("클라이언트 요청 처리 중");
             Server server = new Server(connectionSocket);
             server.serve();
             System.out.println("클라이언트 요청 처리 완료");
-        });
+        });*/
     }
 
     // maxConnenction 초과 시 클라이언트에 503 에러 메시지 전송
