@@ -19,7 +19,8 @@ public class ResponseBodyCreator extends HttpHandler {
                         "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">" + //
                         "<title>" + request.path + "</title>" + //
                         "</head><body>"); 
-
+        
+    
         if (response.status == 200) { // 상태 코드가 200이면 성공적인 응답이므로 본문 생성
             
             if (request.userAgent != null) {

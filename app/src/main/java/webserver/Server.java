@@ -5,6 +5,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
+import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.util.logging.Logger;
 
@@ -14,6 +15,8 @@ import webserver.data.HttpResponse;
 public final class Server {
     private static final Logger logger = Logger.getLogger(Server.class.getName());
     private final Socket connectionSocket;
+    // 기본 타임아웃 설정 5초
+    private static final int SOCKET_TIMEOUT = 5000;
 
     HttpRequest httpRequest;
     HttpResponse httpResponse;
@@ -29,38 +32,54 @@ public final class Server {
     KeepAliveHandler keepAliveHandler;
     ResponseHandler responseHandler;
 
-
-    public Server(Socket connectionSocket) {
+    public Server(Socket connectionSocket) throws SocketException{
         this.connectionSocket = connectionSocket;
+        //커넥션 소켓 생성시 즉시 타임아웃 설정
+        this.connectionSocket.setSoTimeout(SOCKET_TIMEOUT);
         logger.info(() -> "\nConnection Socket ID: " + connectionSocket.hashCode());
         initializeHandler();
         initializeHandlerChain();
     }
-
-    public void serve() {
+/*
+    public void serve(){
         do{
             initializeRequestResponse();
             if(getRequest()){ //에러발생하는 부분
                 // System.out.println("requestString: "+httpRequest.rawData);
                 entryHandler.handle(httpRequest, httpResponse, connectionSocket);
                 sendAvailable(connectionSocket, httpResponse);
-                // System.out.println("hmm");
             }
         } while(isConnectionAlive());
         closeSocket();
-        while(true);
+    }
+*/
+    public void serve() throws IOException {
+        try {
+            initializeRequestResponse();
+            if (getRequest()){
+                entryHandler.handle(httpRequest, httpResponse, connectionSocket);
+                sendAvailable(connectionSocket, httpResponse);
+            }    
+        } catch (SocketTimeoutException e) {
+            System.out.println("timeout! 연결을 종료합니다.");
+            closeSocket();
+        } catch (Exception e){
+            System.out.println("요청 처리 중 에러 발생"+e.getMessage());
+            closeSocket();
+        }
+        
     }
 
     private void closeSocket() {
         try {
             connectionSocket.close();
-            SocketHandler.decreaseConnection();
+            //SocketHandler.decreaseConnection();
         } catch (Exception e) {
             System.err.println("소켓 닫는 중 오류 발생" + e.getMessage());
         }
     }
 
-    private boolean getRequest(){
+    private boolean getRequest() throws SocketTimeoutException {
         String requestString = null;
         StringBuilder requestBuilder = new StringBuilder();
         String line;
@@ -93,10 +112,12 @@ public final class Server {
             requestString = requestBuilder.toString();
             httpRequest.rawData = requestString;
             return flag;
-        } catch(SocketTimeoutException e){
-            System.err.println("Socket timed out: " + e.getMessage());
-        } catch (IOException e) {
+        //} catch(SocketTimeoutException e){
+        //    System.err.println("Socket timed out: " + e.getMessage());
+        } 
+        catch (IOException e) {
             System.err.println("Error Occured: "+e.getMessage());
+            closeSocket();
         }
                 
         // Boolean flag = false;
@@ -127,7 +148,7 @@ public final class Server {
     }
 
     public boolean isConnectionAlive() {
-        return keepAliveHandler.isKeepAlive();
+        return keepAliveHandler.isKeepAlive() && !connectionSocket.isClosed() && connectionSocket.isConnected();
     }
 
     private void initializeRequestResponse() {
@@ -181,5 +202,31 @@ public final class Server {
         }
         catch (IOException e) {
             System.err.println("응답을 보내는 동안 오류 발생" + e.getMessage());
+            closeSocket();
         }
-    }}
+    }
+
+    
+    /* GET, HEAD 이외의 메서드를 처리 테스트용
+    private boolean getRequestForTest() {
+        StringBuilder requestBuilder = new StringBuilder();
+        
+        requestBuilder.append("PUT / HTTP/1.1\r\n");
+        requestBuilder.append("Host: 127.0.0.1\r\n");
+        requestBuilder.append("Content-Type: application/json\r\n");
+        requestBuilder.append("Content-Length: 82\r\n");
+        requestBuilder.append("\r\n");
+        requestBuilder.append("{");
+        requestBuilder.append("\"name\": \"John Doe\",");
+        requestBuilder.append("\"email\": \"john.doe@example.com\",");
+        requestBuilder.append("\"role\": \"admin\"");
+        requestBuilder.append("}\r\n");
+    
+        // 작성한 요청 메시지를 httpRequest 객체에 할당
+        httpRequest.rawData = requestBuilder.toString();
+        
+        // 플래그 반환 (true는 요청이 정상적으로 작성되었음을 의미)
+        return true;
+    }
+    */
+}
