@@ -6,7 +6,7 @@ import webserver.data.HttpRequest;
 import webserver.data.HttpResponse;
 
 public class ResponseBodyCreator extends HttpHandler {
-		
+      
     // 비즈니스 로직으로부터 리소스를 받아 응답을 생성하는 메소드(응답의 본문 생성)
     // HttpRequest와 HttpResponse 객체를 사용하여 응답을 생성
     @Override
@@ -53,7 +53,7 @@ public class ResponseBodyCreator extends HttpHandler {
                     responseBody.append("<p>").append(response.body).append("</p>");
                 }
             } else {
-		            // response.status = 404;
+                  // response.status = 404;
                 // responseBody.append(createErrorResponse(response.status));
             }
         } else { // 상태 코드가 200이 아니면 오류 응답을 생성
@@ -88,11 +88,15 @@ public class ResponseBodyCreator extends HttpHandler {
     // 디렉토리 응답을 생성하는 메소드
     private String createDirectoryResponse(String directoryContents, HttpRequest request) {
         StringBuilder response = new StringBuilder("<h1>Directory Contents</h1><table><thead><tr><th>이름</th><th>크기</th><th>최근 수정일</th></tr></thead><tbody>");
-        String[] filesList = directoryContents.split("!");
-
-        for (String fileString : filesList) {
-            String[] fileInfos = fileString.split(":");
-            response.append("<tr>").append("<td><a href='" + request.path + fileInfos[0] + "'>").append(fileInfos[0]).append("</a></td><td>").append(fileInfos[1]).append("</td><td>").append(fileInfos[2]).append("</td></tr>");
+        if (directoryContents.isEmpty()) {
+            response.append("<tr><td colspan='3'>현재 디렉토리에 파일이 존재하지 않습니다.</td></tr>");
+        } else {
+            String[] filesList = directoryContents.split("!");
+    
+            for (String fileString : filesList) {
+                String[] fileInfos = fileString.split(":");
+                response.append("<tr>").append("<td><a href='" + request.path + fileInfos[0] + "'>").append(fileInfos[0]).append("</a></td><td>").append(fileInfos[1]).append("</td><td>").append(fileInfos[2]).append("</td></tr>");
+            }
         }
         response.append("</tbody></table>");
         return response.toString();
