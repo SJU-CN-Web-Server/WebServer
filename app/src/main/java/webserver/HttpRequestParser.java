@@ -17,7 +17,7 @@ public class HttpRequestParser extends HttpHandler {
         this.response = response;
         String[] lines = request.rawData.split("\r\n");
 
-        parseStartLine(lines[0]);
+        parseStartLine(lines[0], request);
         parseHeader(lines);
         parseBody();
         if (!isMethodAlloewd()) {
@@ -46,12 +46,12 @@ public class HttpRequestParser extends HttpHandler {
     }
 
     // HttpRequest의 첫 줄(method, URL, version) Parsing하여 Request 객체에 추가
-    private void parseStartLine(String startLine) {
+    private void parseStartLine(String startLine, HttpRequest request) {
         String[] startLineInfos = startLine.split(" ");
 
         if (startLineInfos.length == 3) {
             request.method = startLineInfos[0];
-            request.path = startLineInfos[1];
+            request.path = getPathWithoutDownload(startLineInfos[1], request);
             request.version = startLineInfos[2];
         }
     }
@@ -104,4 +104,19 @@ public class HttpRequestParser extends HttpHandler {
             request.body = request.rawData.substring(emptyLineIndex + 4);
         }
     }
+
+    private String getPathWithoutDownload(String path, HttpRequest request) {
+        // /download로 시작하는지 확인
+        String prefix = "/download";
+        if (path.startsWith(prefix)) {
+            request.isDownload = true;
+            // /download 이후의 경로 반환
+            return path.substring(prefix.length());
+        }
+
+        request.isDownload = false;
+        // /download로 시작하지 않으면 원래 경로 반환
+        return path;
+    }
+
 }

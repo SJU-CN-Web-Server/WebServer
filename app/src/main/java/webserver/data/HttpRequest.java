@@ -27,4 +27,5 @@ public class HttpRequest {
     public String ifModifiedSince;
     public String if_none_match;
     public String absPath;
+    public boolean isDownload;
 }

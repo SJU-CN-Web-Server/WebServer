@@ -38,6 +38,9 @@ public class ResponseHandler extends HttpHandler{
         if (response.contentLength != null) {
             httpMessage.append("Content-Length: ").append(response.contentLength).append("\r\n");
         }
+        if (response.contentDisposition != null) {
+            httpMessage.append("Content-Disposition: ").append(response.contentDisposition).append("\r\n");
+        }
         if (response.keepAlive != null) {
             httpMessage.append("Keep-Alive: ").append(response.keepAlive).append("\r\n");
         }

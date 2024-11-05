@@ -17,4 +17,5 @@ public class HttpResponse {
     public String date;
     public Date _date;
     public String allow;
+    public String contentDisposition;
 }

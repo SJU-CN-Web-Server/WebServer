@@ -1,6 +1,11 @@
 package webserver;
 
+import java.io.File;
+import java.io.IOException;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 import webserver.data.HttpRequest;
 import webserver.data.HttpResponse;
@@ -12,6 +17,10 @@ public class ResponseBodyCreator extends HttpHandler {
     @Override
     public void process(HttpRequest request, HttpResponse response, Socket connectionSocket) {
         if(isgoToResponse()){
+            return;
+        }
+        if(request.isDownload) {
+            handleFileDownload(request, response);
             return;
         }
         StringBuilder responseBody = new StringBuilder("<html><!DOCTYPE html><head>" + //
@@ -50,6 +59,7 @@ public class ResponseBodyCreator extends HttpHandler {
                 if (request.isDirectory) { // 디렉토리일 경우
                     responseBody.append(createDirectoryResponse(response.body, request));
                 } else { // 파일일 경우
+                    responseBody.append("<a href='/download").append(request.path).append("'>파일 다운로드</a>");
                     responseBody.append("<p>").append(response.body).append("</p>");
                 }
             } else {
@@ -69,6 +79,29 @@ public class ResponseBodyCreator extends HttpHandler {
         response.contentLength = response.body.getBytes().length+1;
 
     }
+
+    public void handleFileDownload(HttpRequest request, HttpResponse response) {
+        try {
+            File file = new File(request.absPath);
+            
+            // Content-Type 결정
+            String mimeType = Files.probeContentType(Paths.get(request.absPath));
+            if (mimeType == null) {
+                mimeType = "application/octet-stream";
+            }
+            
+            // Content-Disposition, Content-Length 등 헤더 작성
+            response.contentType = mimeType;
+            response.contentDisposition = "attachment; filename=\"" + file.getName() + "\"";
+            response.contentLength = (int) file.length();
+            
+            // 파일 데이터 body에 추가
+            response.body = new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     // 오류 응답을 생성하는 메소드
     private String createErrorResponse(int statusCode) {
