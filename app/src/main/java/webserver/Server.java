@@ -15,6 +15,8 @@ import webserver.data.HttpResponse;
 public final class Server {
     private static final Logger logger = Logger.getLogger(Server.class.getName());
     private final Socket connectionSocket;
+    // 기본 타임아웃 설정 5초
+    private static final int SOCKET_TIMEOUT = 5000;
 
     HttpRequest httpRequest;
     HttpResponse httpResponse;
@@ -30,14 +32,16 @@ public final class Server {
     KeepAliveHandler keepAliveHandler;
     ResponseHandler responseHandler;
 
-
-    public Server(Socket connectionSocket) {
+    // 예외처리 throws로 관리
+    public Server(Socket connectionSocket) throws SocketException{
         this.connectionSocket = connectionSocket;
+        //커넥션 소켓 생성시 즉시 타임아웃 설정
+        this.connectionSocket.setSoTimeout(SOCKET_TIMEOUT);
         logger.info(() -> "\nConnection Socket ID: " + connectionSocket.hashCode());
         initializeHandler();
         initializeHandlerChain();
     }
-
+/*
     public void serve(){
         do{
             initializeRequestResponse();
@@ -48,6 +52,23 @@ public final class Server {
             }
         } while(isConnectionAlive());
         closeSocket();
+    }
+*/
+    public void serve() throws IOException {
+        try {
+            initializeRequestResponse();
+            if (getRequest()){
+                entryHandler.handle(httpRequest, httpResponse, connectionSocket);
+                sendAvailable(connectionSocket, httpResponse);
+            }    
+        } catch (SocketTimeoutException e) {
+            System.out.println("timeout! 연결을 종료합니다.");
+            closeSocket();
+        } catch (Exception e){
+            System.out.println("요청 처리 중 에러 발생"+e.getMessage());
+            closeSocket();
+        }
+        
     }
 
 /*
@@ -77,13 +98,13 @@ public final class Server {
     private void closeSocket() {
         try {
             connectionSocket.close();
-            SocketHandler.decreaseConnection();
+            //SocketHandler.decreaseConnection();
         } catch (Exception e) {
             System.err.println("소켓 닫는 중 오류 발생" + e.getMessage());
         }
     }
 
-    private boolean getRequest() {
+    private boolean getRequest() throws SocketTimeoutException {
         String requestString = null;
         StringBuilder requestBuilder = new StringBuilder();
         String line;
@@ -116,11 +137,12 @@ public final class Server {
             requestString = requestBuilder.toString();
             httpRequest.rawData = requestString;
             return flag;
-        } catch(SocketTimeoutException e){
-            System.err.println("Socket timed out: " + e.getMessage());
+        //} catch(SocketTimeoutException e){
+        //    System.err.println("Socket timed out: " + e.getMessage());
         } 
         catch (IOException e) {
             System.err.println("Error Occured: "+e.getMessage());
+            closeSocket();
         }
                 
         // Boolean flag = false;
@@ -151,7 +173,7 @@ public final class Server {
     }
 
     public boolean isConnectionAlive() {
-        return keepAliveHandler.isKeepAlive();
+        return keepAliveHandler.isKeepAlive() && !connectionSocket.isClosed() && connectionSocket.isConnected();
     }
 
     private void initializeRequestResponse() {
@@ -205,6 +227,7 @@ public final class Server {
         }
         catch (IOException e) {
             System.err.println("응답을 보내는 동안 오류 발생" + e.getMessage());
+            closeSocket();
         }
     }
 
