@@ -52,10 +52,7 @@ public class ResponseBodyCreator extends HttpHandler {
                 } else { // 파일일 경우
                     responseBody.append("<p>").append(response.body).append("</p>");
                 }
-            } else {
-		            // response.status = 404;
-                // responseBody.append(createErrorResponse(response.status));
-            }
+            } 
         } else { // 상태 코드가 200이 아니면 오류 응답을 생성
             responseBody.append(createErrorResponse(response.status));
         }

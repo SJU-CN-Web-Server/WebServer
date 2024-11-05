@@ -35,7 +35,6 @@ public class HttpRequestParser extends HttpHandler {
         response.allow = "HEAD, GET";
         response.contentLength = 512;
         response.contentType = "text/html; charset=UTF-8";
-        //Hard-code:body부분 수정 필요
         response.body = "<html>\n" +
                         "<head><title>405 Method Not Allowed</title></head>\n" + //
                         "<body>\n" +

@@ -40,19 +40,7 @@ public final class Server {
         initializeHandler();
         initializeHandlerChain();
     }
-/*
-    public void serve(){
-        do{
-            initializeRequestResponse();
-            if(getRequest()){ //에러발생하는 부분
-                // System.out.println("requestString: "+httpRequest.rawData);
-                entryHandler.handle(httpRequest, httpResponse, connectionSocket);
-                sendAvailable(connectionSocket, httpResponse);
-            }
-        } while(isConnectionAlive());
-        closeSocket();
-    }
-*/
+
     public void serve() throws IOException {
         try {
             initializeRequestResponse();
@@ -73,7 +61,6 @@ public final class Server {
     private void closeSocket() {
         try {
             connectionSocket.close();
-            //SocketHandler.decreaseConnection();
         } catch (Exception e) {
             System.err.println("소켓 닫는 중 오류 발생" + e.getMessage());
         }
@@ -112,38 +99,12 @@ public final class Server {
             requestString = requestBuilder.toString();
             httpRequest.rawData = requestString;
             return flag;
-        //} catch(SocketTimeoutException e){
-        //    System.err.println("Socket timed out: " + e.getMessage());
         } 
         catch (IOException e) {
             System.err.println("Error Occured: "+e.getMessage());
             closeSocket();
         }
-                
-        // Boolean flag = false;
-        // try{
-        //     InputStream in = connectionSocket.getInputStream();
-        //     ByteArrayOutputStream out = new ByteArrayOutputStream();
-        //     byte[] buffer = new byte[1024];
-        //     int length;
-        //     while((length = in.read(buffer)) != -1){
-        //         flag = true;
-        //         out.write(buffer, 0, length);
-        //         String currentData = out.toString("UTF-8");
-
-        //         // // 요청이 끝났는지 확인: 빈 줄 "\r\n\r\n"이 있으면 완료로 판단
-        //         if (currentData.contains("\r\n\r\n")) {
-        //             // requestComplete = true;
-        //             break;
-        //         }
-        //     }
-        //     httpRequest.rawData = out.toString();
-        //     // logger.info(() -> "요청 받음: " + httpRequest.rawData);
-        //     return flag;
-        // }
-        // catch(IOException e){
-        //     logger.warning(() -> "클라이언트 요청을 받는 동안 오류 발생" + e.getMessage());
-        // }
+        
         return false;
     }
 
@@ -179,7 +140,6 @@ public final class Server {
     private void sendAvailable(Socket connectionSocket, HttpResponse response) {
         try {
             DataOutputStream out = new DataOutputStream(connectionSocket.getOutputStream());
-            // System.out.println(response.rawData);
 
             byte[] responseBytes = response.rawData.getBytes();
             byte[] newlineBytes = "\r\n".getBytes();
@@ -188,45 +148,10 @@ public final class Server {
             System.arraycopy(newlineBytes, 0, combinedBytes, responseBytes.length, newlineBytes.length);
             out.write(combinedBytes);
             out.flush();
-            // PrintWriter writer = new PrintWriter(connectionSocket.getOutputStream(), true);
-            
-            // // HTTP 응답 헤더 작성 후 클라이언트에게 전송
-            // // System.out.println("final"+response.rawData);
-            // writer.println(response.rawData);
-            // //writer.println();
-            // writer.flush(); // 버퍼에 저장된 데이터를 즉시 출력하도록 강제
-            // writer.close();
-            
-            // 메시지 전송 후 클라이언트 소켓 close
-            //connectionSocket.close();
         }
         catch (IOException e) {
             System.err.println("응답을 보내는 동안 오류 발생" + e.getMessage());
             closeSocket();
         }
     }
-
-    
-    /* GET, HEAD 이외의 메서드를 처리 테스트용
-    private boolean getRequestForTest() {
-        StringBuilder requestBuilder = new StringBuilder();
-        
-        requestBuilder.append("PUT / HTTP/1.1\r\n");
-        requestBuilder.append("Host: 127.0.0.1\r\n");
-        requestBuilder.append("Content-Type: application/json\r\n");
-        requestBuilder.append("Content-Length: 82\r\n");
-        requestBuilder.append("\r\n");
-        requestBuilder.append("{");
-        requestBuilder.append("\"name\": \"John Doe\",");
-        requestBuilder.append("\"email\": \"john.doe@example.com\",");
-        requestBuilder.append("\"role\": \"admin\"");
-        requestBuilder.append("}\r\n");
-    
-        // 작성한 요청 메시지를 httpRequest 객체에 할당
-        httpRequest.rawData = requestBuilder.toString();
-        
-        // 플래그 반환 (true는 요청이 정상적으로 작성되었음을 의미)
-        return true;
-    }
-    */
 }

@@ -13,14 +13,11 @@ public class HttpRequest {
     public String body;
     public Integer port;
     public Optional<String> connection = Optional.empty();
-    // public String connection;
     public String keepAlive;
-    public String rawData; //추가
-    public String acceptLanguage; //추가
-    public String acceptEncoding; //추가
-    public String acceptCharset; //추가
-    // public String keepAlive; //추가
-    // public String connection; //추가
+    public String rawData; 
+    public String acceptLanguage; 
+    public String acceptEncoding; 
+    public String acceptCharset; 
 
     public boolean isDirectory;
 

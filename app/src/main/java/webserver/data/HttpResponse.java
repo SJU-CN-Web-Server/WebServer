@@ -10,7 +10,7 @@ public class HttpResponse {
     public Integer contentLength;
     public String keepAlive;
     public String connection;
-    public String rawData; //추가
+    public String rawData; 
     public String cache_control;
     public String cache_expires;
     public String last_modified;
