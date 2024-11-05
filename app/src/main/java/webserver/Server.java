@@ -32,7 +32,6 @@ public final class Server {
     KeepAliveHandler keepAliveHandler;
     ResponseHandler responseHandler;
 
-    // 예외처리 throws로 관리
     public Server(Socket connectionSocket) throws SocketException{
         this.connectionSocket = connectionSocket;
         //커넥션 소켓 생성시 즉시 타임아웃 설정
@@ -71,30 +70,6 @@ public final class Server {
         
     }
 
-/*
-    public void serve() {
-        try {
-            connectionSocket.setSoTimeout(5000);
-            try {
-                do{
-                    initializeRequestResponse();
-                    if(getRequest()){ //에러발생하는 부분
-                        // System.out.println("requestString: "+httpRequest.rawData);
-                        entryHandler.handle(httpRequest, httpResponse, connectionSocket);
-                        sendAvailable(connectionSocket, httpResponse);
-                    }
-                } while(isConnectionAlive());
-                closeSocket();
-            } catch (SocketTimeoutException e) {
-                System.out.println("TimeOut!!");
-                closeSocket();
-            }
-        } catch (SocketException e) {
-            System.out.println("타임아웃을 설정하는 동안 오류발생"+e.getMessage());
-            closeSocket();
-        }
-    }
-*/
     private void closeSocket() {
         try {
             connectionSocket.close();

@@ -22,17 +22,6 @@ public class SocketHandler {
         welcomeSocket = new ServerSocket(port);
         threadPool = Executors.newFixedThreadPool(maxConnection);
         this.maxConnection = maxConnection;
-/*
-        // maxConnection만큼 스레드를 만들어 멀티 스레딩 환경 관리
-        //this.threadPool = Executors.newFixedThreadPool(maxConnection);
-        try {
-            //지정된 포트 번호로 서버 소켓 생성
-            this.welcomeSocket = new ServerSocket(port);
-        } 
-        catch (IOException e) {
-            System.err.println("서버 소켓 생성하는 동안 오류 발생" + e.getMessage());
-        }
-*/
     }
     
     // 서버 시작하고 클라이언트 연결 대기. 클라이언트 연결되면 handleClientRequest() 호출
@@ -52,14 +41,8 @@ public class SocketHandler {
         }
     }
 
-    //public static void decreaseConnection() {
-        //SocketHandler.currentConnection--;
-    //}
-
     // maxConnection 확인하고 초과 시 sendUnavailable() 호출. 그렇지 않으면 클라이언트 요청 처리
     private void handleClientRequest(Socket connectionSocket) {
-        //SocketHandler.currentConnection++;
-        // if (this.currentConnection > this.maxConnection) {
         if (((ThreadPoolExecutor) this.threadPool).getActiveCount() >= this.maxConnection){
             // maxConnection 초과 시 503 에러 메시지
             sendUnavailable(connectionSocket);
@@ -69,9 +52,7 @@ public class SocketHandler {
         threadPool.execute(()->{
             try {
                 Server server = new Server(connectionSocket);
-                //do {
-                    server.serve();
-                //} while (server.isConnectionAlive());
+                server.serve();
             } catch (IOException e) {
                 System.err.println("serve에 실패했습니다.");
             } finally {
