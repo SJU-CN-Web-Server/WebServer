@@ -32,7 +32,7 @@ public class HttpCachingHandler extends HttpHandler{
     public void process(HttpRequest request, HttpResponse response, Socket clientSocket) {
         this.httpRequest = request;
         this.httpResponse = response;
-        if(request.if_modified_since != null
+        if(request.ifModifiedSince != null
         || request.if_none_match != null) {
             handleCacheRequest();
         } else {
@@ -86,7 +86,7 @@ public class HttpCachingHandler extends HttpHandler{
         }
     }
     private void setIfmodifiedSinceTime(){
-        ZonedDateTime ifModifiedSinceZdt = ZonedDateTime.parse(this.httpRequest.if_modified_since, formatter);
+        ZonedDateTime ifModifiedSinceZdt = ZonedDateTime.parse(this.httpRequest.ifModifiedSince, formatter);
         ifModifiedSince = ifModifiedSinceZdt.toInstant();
     }
 }

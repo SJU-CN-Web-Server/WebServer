@@ -24,7 +24,7 @@ public class HttpRequest {
 
     public boolean isDirectory;
 
-    public String if_modified_since;
+    public String ifModifiedSince;
     public String if_none_match;
     public String absPath;
 }
