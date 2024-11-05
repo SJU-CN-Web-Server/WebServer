@@ -17,15 +17,12 @@ public abstract class HttpHandler {
     }
 
     public void handle(HttpRequest request, HttpResponse response, Socket connectionSocket){
-        process(request, response, connectionSocket);
-        //추가 구현예정
-        // if(goToResponse){
-        //     return;
-        // }
-        // if(!goToResponse && nextHandler != null){
+        if(!isgoToResponse()){
+            process(request, response, connectionSocket);
+        }
         if(nextHandler != null){
             nextHandler.handle(request, response, connectionSocket);
-        }
+        } else process(request, response, connectionSocket);   
     }
 
     public HttpHandler setNextHandler(HttpHandler nextHandler) {
