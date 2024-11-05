@@ -68,22 +68,28 @@ public class HttpCachingHandler extends HttpHandler{
         }
     }
     private void handleNonCacheRequest(){
-        setLastModifiedTime();
-        String formattedDate = formatter1.format(lastModified);
-        httpResponse.status = 200;
-        httpResponse.cache_control = "max-age=6"; //temporary, 캐시 정책 설정필요.
-        httpResponse.last_modified = formattedDate; // temporary, 캐시 정책 설정필요.
-        // response.cache_expires = "Wed, 21 Oct 2030 07:28:00 GMT"; // temporary, 캐시 정책 설정필요.
+        if(setLastModifiedTime()){
+            String formattedDate = formatter1.format(lastModified);
+            httpResponse.status = 200;
+            httpResponse.cache_control = "max-age=6"; //temporary, 캐시 정책 설정필요.
+            httpResponse.last_modified = formattedDate; // temporary, 캐시 정책 설정필요.
+            // response.cache_expires = "Wed, 21 Oct 2030 07:28:00 GMT"; // temporary, 캐시 정책 설정필요.
+        }
     }
 
     //utils
-    private void setLastModifiedTime() {
+    private boolean setLastModifiedTime() {
+        Path path = Path.of(httpRequest.absPath);
+        if(!Files.exists(path)) {
+            return false;
+        }
         try {
-            Path path = Path.of(httpRequest.absPath);
             this.lastModified = Files.getLastModifiedTime(path).toInstant().truncatedTo(ChronoUnit.SECONDS);
+            return true;
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return false;
     }
     private void setIfmodifiedSinceTime(){
         ZonedDateTime ifModifiedSinceZdt = ZonedDateTime.parse(this.httpRequest.ifModifiedSince, formatter);
