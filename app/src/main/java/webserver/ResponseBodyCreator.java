@@ -61,7 +61,7 @@ public class ResponseBodyCreator extends HttpHandler {
                     responseBody.append(createDirectoryResponse(response.body, request));
                 } else { // 파일일 경우
                     responseBody.append("<a href='/download").append(request.path).append("'>파일 다운로드</a>");
-                    responseBody.append("<p>").append(response.body).append("</p>");
+                    responseBody.append("<pre>").append(response.body).append("</pre>");
                 }
             } else {
 		            // response.status = 404;
