@@ -3,6 +3,7 @@ package webserver;
 import java.io.File;
 import java.io.IOException;
 import java.net.Socket;
+import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -82,7 +83,8 @@ public class ResponseBodyCreator extends HttpHandler {
 
     public void handleFileDownload(HttpRequest request, HttpResponse response) {
         try {
-            File file = new File(request.absPath);
+            String filePath = URLDecoder.decode(request.absPath, StandardCharsets.UTF_8);
+            File file = new File(filePath);
             
             // Content-Type 결정
             String mimeType = Files.probeContentType(Paths.get(request.absPath));
