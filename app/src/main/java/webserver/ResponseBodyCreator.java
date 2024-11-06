@@ -20,6 +20,11 @@ public class ResponseBodyCreator extends HttpHandler {
         if(isgoToResponse()){
             return;
         }
+        if(!request.method.equalsIgnoreCase("GET")) {
+            response.contentLength = 0;
+            response.body = "";
+            return;
+        }
         if(request.isDownload) {
             handleFileDownload(request, response);
             return;
