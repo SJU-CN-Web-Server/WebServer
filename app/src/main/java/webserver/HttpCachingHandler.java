@@ -1,10 +1,8 @@
 package webserver;
 
-import java.io.InputStream;
 import java.net.Socket;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
@@ -12,9 +10,6 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.time.temporal.ChronoField;
 import java.time.temporal.ChronoUnit;
-import java.util.Map;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import webserver.data.HttpRequest;
 import webserver.data.HttpResponse;
@@ -52,7 +47,7 @@ public class HttpCachingHandler extends HttpHandler{
         try{
             if(lastModified.isAfter(ifModifiedSince)){
                 httpResponse.status = 200;
-                httpResponse.cache_control = "public, " +getCacheControlMaxAge(); 
+                httpResponse.cache_control = "public, max-age=3600"; //temporary
 
                 // 포맷터 설정
 
@@ -72,43 +67,11 @@ public class HttpCachingHandler extends HttpHandler{
             e.printStackTrace();
         }
     }
-
-    private String getCacheControlMaxAge() {
-        // Default TTL value
-        int defaultTTL = 3600;
-        int ttlValue = defaultTTL;
-        
-        // Define the path to the settings.json file in the user's directory
-        String userDir = System.getProperty("user.dir");
-        Path settingsPath = Paths.get(userDir, "settings.json");
-
-        if(!Files.exists(settingsPath)) {
-            System.out.println("settings.json not found. Using default value of 3600");
-            return "max-age=" + ttlValue;
-        }
-
-        try (InputStream input = Files.newInputStream(settingsPath)) {
-            ObjectMapper objectMapper = new ObjectMapper();
-            Map<String, Object> jsonMap = objectMapper.readValue(input, Map.class);
-            
-            // Retrieve the TTL value from the JSON if present, else use the default
-            if (jsonMap.containsKey("ttl")) {
-                ttlValue = (int) jsonMap.get("ttl");
-            } else {
-                System.out.println("\"ttl\" not found in settings.json, using default value of 3600");
-            }
-        } catch (Exception e) {
-            System.out.println("Failed to load TTL from settings.json, using default value of 3600");
-        }
-
-        return "max-age=" + ttlValue;
-    }
-
     private void handleNonCacheRequest(){
         if(setLastModifiedTime()){
             String formattedDate = formatter1.format(lastModified);
             httpResponse.status = 200;
-            httpResponse.cache_control = "public, " +getCacheControlMaxAge(); //temporary, 캐시 정책 설정필요.
+            httpResponse.cache_control = "max-age=3600"; //temporary, 캐시 정책 설정필요.
             httpResponse.last_modified = formattedDate; // temporary, 캐시 정책 설정필요.
             // response.cache_expires = "Wed, 21 Oct 2030 07:28:00 GMT"; // temporary, 캐시 정책 설정필요.
         }
