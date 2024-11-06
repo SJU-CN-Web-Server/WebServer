@@ -3,6 +3,8 @@ package webserver;
 import java.io.File;
 import java.io.IOException;
 import java.net.Socket;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -23,6 +25,7 @@ public class BusinessLogicHandler extends HttpHandler {
         }
         // 요청된 리소스 경로를 가져옴
         currentResourcePath = request.absPath;  // 사용자가 요청한 파일의 경로를 가져옴
+        currentResourcePath = URLDecoder.decode(currentResourcePath, StandardCharsets.UTF_8);
 
         // 멤버 변수인 resource 설정
         resource = new File(currentResourcePath);   
