@@ -40,19 +40,6 @@ public final class Server {
         initializeHandler();
         initializeHandlerChain();
     }
-/*
-    public void serve(){
-        do{
-            initializeRequestResponse();
-            if(getRequest()){ //에러발생하는 부분
-                // System.out.println("requestString: "+httpRequest.rawData);
-                entryHandler.handle(httpRequest, httpResponse, connectionSocket);
-                sendAvailable(connectionSocket, httpResponse);
-            }
-        } while(isConnectionAlive());
-        closeSocket();
-    }
-*/
     public void serve() throws IOException {
         try {
             initializeRequestResponse();

@@ -35,9 +35,8 @@ public class ResponseBodyCreator extends HttpHandler {
                         "<title>" + request.path + "</title>" + //
                         "</head><body>"); 
 
-        if (response.status == 200) { // 상태 코드가 200이면 성공적인 응답이므로 본문 생성
-            
-            if (request.userAgent != null) {
+        if (response.status == 200) { // 상태 코드가 200이면 성공적인 응답이므로 본문 생성            
+            if (request.userAgent != null && request.method.equalsIgnoreCase("GET")) {
                 String lowerUserAgent = request.userAgent.toLowerCase();
                 responseBody.append("<h2>Welcome, ");
               
@@ -68,10 +67,7 @@ public class ResponseBodyCreator extends HttpHandler {
                     responseBody.append("<a href='/download").append(request.path).append("'>파일 다운로드</a>");
                     responseBody.append("<pre>").append(response.body).append("</pre>");
                 }
-            } else {
-		            // response.status = 404;
-                // responseBody.append(createErrorResponse(response.status));
-            }
+            } 
         } else { // 상태 코드가 200이 아니면 오류 응답을 생성
             responseBody.append(createErrorResponse(response.status));
         }

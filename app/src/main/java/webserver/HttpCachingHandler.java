@@ -73,7 +73,6 @@ public class HttpCachingHandler extends HttpHandler{
             httpResponse.status = 200;
             httpResponse.cache_control = "max-age=3600"; //temporary, 캐시 정책 설정필요.
             httpResponse.last_modified = formattedDate; // temporary, 캐시 정책 설정필요.
-            // response.cache_expires = "Wed, 21 Oct 2030 07:28:00 GMT"; // temporary, 캐시 정책 설정필요.
         }
     }
 

@@ -65,14 +65,6 @@ public class SocketHandler {
 
         });
 
-        /*
-        // 새로운 스레드 사용하여 클라이언트 요청 처리
-        threadPool.execute(() -> {
-            System.out.println("클라이언트 요청 처리 중");
-            Server server = new Server(connectionSocket);
-            server.serve();
-            System.out.println("클라이언트 요청 처리 완료");
-        });*/
     }
 
     // maxConnenction 초과 시 클라이언트에 503 에러 메시지 전송
@@ -88,13 +80,6 @@ public class SocketHandler {
             writer.println();
             writer.flush(); // 버퍼에 저장된 데이터를 즉시 출력하도록 강제
 
-            // writer.println("HTTP/1.1 503 Service Unavailable");
-            // writer.println("Date: " + new java.util.Date());
-            // writer.println("Connection: close");
-            // writer.println("Content-Length: 0");
-            // writer.println();  // 빈 줄 추가로 헤더와 본문을 구분
-            // writer.flush();    // 버퍼에 저장된 데이터 즉시 전송
-            
             // 메시지 전송 후 클라이언트 소켓 close
             connectionSocket.close();
         }
@@ -102,23 +87,6 @@ public class SocketHandler {
             System.err.println("503 응답을 보내는 동안 오류 발생" + e.getMessage());
         }
     }
-
-    // private void sendAvailable(Socket connectionSocket, HttpResponse response) {
-    //     try {
-    //         PrintWriter writer = new PrintWriter(connectionSocket.getOutputStream(), true);
-            
-    //         // HTTP 응답 헤더 작성 후 클라이언트에게 전송
-    //         writer.println(response.rawData);
-    //         writer.println();
-    //         writer.flush(); // 버퍼에 저장된 데이터를 즉시 출력하도록 강제
-            
-    //         // 메시지 전송 후 클라이언트 소켓 close
-    //         //connectionSocket.close();
-    //     }
-    //     catch (IOException e) {
-    //         System.err.println("응답을 보내는 동안 오류 발생" + e.getMessage());
-    //     }
-    // }
 
     // 서버 종료하고 열려 있는 모든 소켓을 close
     public void closeServer() {

@@ -13,7 +13,6 @@ import webserver.data.HttpRequest;
 import webserver.data.HttpResponse;
 
 public class BusinessLogicHandler extends HttpHandler {
-    // 선택적 속성: 비즈니스 로직 핸들러 내부에서 사용되는 임시 데이터 저장소
     private String currentResourcePath;
     private Object resourceData;
     private File resource;
@@ -30,9 +29,7 @@ public class BusinessLogicHandler extends HttpHandler {
         // 멤버 변수인 resource 설정
         resource = new File(currentResourcePath);   
 
-        // 리소스 존재 여부 확인
         boolean exists = checkResourceExists(); // 이 파일이 실제로 있는지 확인
-        //파일이나 디렉토리가 실제로 존재하는지 확인
 
         if (exists) {
             try {
