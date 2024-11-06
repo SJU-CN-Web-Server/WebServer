@@ -60,7 +60,7 @@ public class KeepAliveHandler extends HttpHandler{
             }
             // request 메세지에 keep-alive 설정이 없을 경우 default로 설정
             response.connection="Keep-Alive";
-            response.keepAlive="timeout="+Integer.toString(timeout/1000)+ "max="+Integer.toString(maxRequests);
+            response.keepAlive="timeout="+Integer.toString(timeout/1000)+ ", max="+Integer.toString(maxRequests);
             keepAlive=true;
         }
         // 소켓 TTL 설정
